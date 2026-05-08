@@ -1,0 +1,15 @@
+langchain
+langchain-community
+langchain-ollama
+yfinance
+pandas
+pandas_ta
+chromadb
+python-dotenv
+requests
+feedparser
+beautifulsoup4
+lxml
+fastapi
+uvicorn
+scikit-learn
