@@ -30,13 +30,13 @@ def auto_auth():
     from kiteconnect import KiteConnect
     api_key = os.getenv("ZERODHA_API_KEY")
     api_secret = os.getenv("ZERODHA_API_SECRET")
-    request_token = os.getenv("ZERODHA_REQUEST_TOKEN")
+    request_token = os.getenv("ZERODHA_ACCESS_TOKEN")
     
     if not all([api_key, api_secret, request_token]):
         print("❌ Missing credentials. Set in .env:")
         print("   ZERODHA_API_KEY")
         print("   ZERODHA_API_SECRET")
-        print("   ZERODHA_REQUEST_TOKEN")
+        print("   ZERODHA_ACCESS_TOKEN")
         return None
     
     kite = KiteConnect(api_key=api_key)
