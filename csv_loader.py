@@ -139,7 +139,7 @@ Format: Date,Open,High,Low,Close,Volume
 
 
 def download_csv(ticker: str, period: str = "max", csv_dir: str = "data") -> bool:
-    """Download CSV data using requests
+    """Download CSV data using yfinance
     
     Args:
         ticker: Stock ticker
@@ -152,87 +152,29 @@ def download_csv(ticker: str, period: str = "max", csv_dir: str = "data") -> boo
     symbol = ticker.replace('.NS', '')
     os.makedirs(csv_dir, exist_ok=True)
     
-    url = f"https://query1.finance.yahoo.com/v7/finance/download/{symbol}.NS?periods={period}&interval=1d&filter=history"
     csv_path = os.path.join(csv_dir, f"{symbol}.csv")
     
-    print(f"📥 Downloading {ticker} data...")
+    print(f"📥 Downloading {ticker} data via yfinance...")
     
     try:
-        import requests
-        headers = {
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
-        }
+        import yfinance as yf
         
-        response = requests.get(url, headers=headers, timeout=30)
+        stock = yf.Ticker(ticker)
+        df = stock.history(period=period, auto_adjust=True)
         
-        if response.status_code != 200:
-            print(f"❌ HTTP Error: {response.status_code}")
-            # Check if it's HTML (error page)
-            if 'text/html' in response.headers.get('Content-Type', ''):
-                print("❌ Yahoo blocked the request")
-                print("   Try: Option 30 for manual download instructions")
+        if df is None or len(df) < 10:
+            print(f"❌ No data received")
             return False
         
-        # Check content
-        if '<html>' in response.text[:100].lower():
-            print("❌ Yahoo returned error page")
-            return False
+        # Reset index to have Date column
+        df = df.reset_index()
         
-        # Save
-        with open(csv_path, 'w') as f:
-            f.write(response.text)
+        # Save as CSV matching Yahoo format
+        df.to_csv(csv_path, index=False)
         
-        size = len(response.text)
-        if size > 1000:
-            print(f"✅ Saved to {csv_path} ({size/1024:.1f} KB)")
-            return True
-        else:
-            print(f"❌ File too small: {size} bytes")
-            os.remove(csv_path)
-            return False
-            
-    except ImportError:
-        # Fallback to curl
-        return download_csv_curl(ticker, period, csv_dir)
-    except Exception as e:
-        print(f"❌ Error: {e}")
-        return False
-
-
-def download_csv_curl(ticker: str, period: str = "max", csv_dir: str = "data") -> bool:
-    """Fallback curl download"""
-    symbol = ticker.replace('.NS', '')
-    os.makedirs(csv_dir, exist_ok=True)
-    
-    url = f"https://query1.finance.yahoo.com/v7/finance/download/{symbol}.NS?periods={period}&interval=1d&filter=history"
-    csv_path = os.path.join(csv_dir, f"{symbol}.csv")
-    
-    print(f"📥 Downloading {ticker} data (curl fallback)...")
-    
-    try:
-        import subprocess
-        result = subprocess.run(
-            ['curl', '-L', '-s', '-A', 'Mozilla/5.0', '-o', csv_path, url],
-            capture_output=True,
-            text=True,
-            timeout=30
-        )
-        
-        if result.returncode != 0:
-            print(f"❌ Download failed: {result.stderr}")
-            return False
-        
-        # Verify file
-        if os.path.exists(csv_path):
-            size = os.path.getsize(csv_path)
-            if size > 1000:
-                print(f"✅ Saved to {csv_path} ({size/1024:.1f} KB)")
-                return True
-            else:
-                print(f"❌ File too small: {size} bytes")
-                os.remove(csv_path)
-                return False
-        return False
+        size = os.path.getsize(csv_path)
+        print(f"✅ Saved to {csv_path} ({size/1024:.1f} KB, {len(df)} rows)")
+        return True
             
     except Exception as e:
         print(f"❌ Error: {e}")
