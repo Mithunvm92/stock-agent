@@ -15,20 +15,34 @@ import yfinance as yf
 import pandas as pd
 
 
-def backtest(ticker: str, initial_capital: float = 2000, years: int = 2) -> dict:
-    """Run backtest on historical data"""
+def backtest(ticker: str, initial_capital: float = 2000, years: int = 1, period: str = None) -> dict:
+    """Run backtest on historical data
+    
+    Args:
+        ticker: Stock ticker
+        initial_capital: Starting capital
+        years: Number of years (used if period not specified)
+        period: Custom period (1mo, 3mo, 6mo, 1y, 2y, 5y, max)
+    """
+    
+    # Use period or calculate from years
+    if period:
+        fetch_period = period
+        backtest_years = 1  # Use 1 year of available data for backtest
+    else:
+        fetch_period = f"{years}y"
+        backtest_years = years
     
     print(f"\n{'='*50}")
-    print(f"   BACKTEST: {ticker} ({years} years)")
+    print(f"   BACKTEST: {ticker} ({fetch_period})")
     print(f"{'='*50}")
     
-    # Get data for specified years + 1 year for indicators
-    fetch_years = years + 1
-    print(f"📥 Fetching {fetch_years} years of data...")
+    # Get data for specified period
+    print(f"📥 Fetching {fetch_period} of data...")
     stock = yf.Ticker(ticker)
-    df = stock.history(period=f"{fetch_years}y", auto_adjust=True)
+    df = stock.history(period=fetch_period, auto_adjust=True)
     
-    if df is None or len(df) < 250:
+    if df is None or len(df) < 20:
         print("❌ Insufficient data")
         return {}
     
@@ -45,8 +59,9 @@ def backtest(ticker: str, initial_capital: float = 2000, years: int = 2) -> dict
     losses = 0
     trades = []
     
-    # Start from years ago (skip first year for indicator warmup)
-    start_idx = max(50, len(df) - (252 * years))  # ~252 trading days per year
+    # Start from years ago (skip first portion for indicator warmup)
+    warmup_days = min(50, len(df) // 4)  # Warmup: 25% or 50 days
+    start_idx = warmup_days
     
     print(f"\n🔄 Running backtest from day {start_idx} to {len(df)}...")
     
@@ -89,7 +104,7 @@ def backtest(ticker: str, initial_capital: float = 2000, years: int = 2) -> dict
                 proceeds = close * position['shares']
                 trade_pnl = proceeds - (position['entry'] * position['shares'])
                 cash += proceeds
-                trades.append({'type': 'SELL', 'pnl': trade_pnl, 'reason': 'STOP LOSS'})
+                trades.append({'type': 'SELL', 'price': close, 'pnl': trade_pnl, 'reason': 'STOP LOSS'})
                 position = None
                 losses += 1
                 continue
@@ -100,7 +115,7 @@ def backtest(ticker: str, initial_capital: float = 2000, years: int = 2) -> dict
                 proceeds = close * position['shares']
                 trade_pnl = proceeds - (position['entry'] * position['shares'])
                 cash += proceeds
-                trades.append({'type': 'SELL', 'pnl': trade_pnl, 'reason': 'TARGET'})
+                trades.append({'type': 'SELL', 'price': close, 'pnl': trade_pnl, 'reason': 'TARGET'})
                 position = None
                 wins += 1
                 continue
@@ -110,7 +125,7 @@ def backtest(ticker: str, initial_capital: float = 2000, years: int = 2) -> dict
                 proceeds = close * position['shares']
                 trade_pnl = proceeds - (position['entry'] * position['shares'])
                 cash += proceeds
-                trades.append({'type': 'SELL', 'pnl': trade_pnl, 'reason': 'RSI OVERBOUGHT'})
+                trades.append({'type': 'SELL', 'price': close, 'pnl': trade_pnl, 'reason': 'RSI OVERBOUGHT'})
                 position = None
                 if trade_pnl > 0:
                     wins += 1
@@ -123,7 +138,7 @@ def backtest(ticker: str, initial_capital: float = 2000, years: int = 2) -> dict
                 proceeds = close * position['shares']
                 trade_pnl = proceeds - (position['entry'] * position['shares'])
                 cash += proceeds
-                trades.append({'type': 'SELL', 'pnl': trade_pnl, 'reason': 'BELOW SMA20'})
+                trades.append({'type': 'SELL', 'price': close, 'pnl': trade_pnl, 'reason': 'BELOW SMA20'})
                 position = None
                 if trade_pnl > 0:
                     wins += 1
@@ -176,13 +191,13 @@ def backtest(ticker: str, initial_capital: float = 2000, years: int = 2) -> dict
                     }
                     trades.append({'type': 'BUY', 'price': close, 'shares': shares})
     
-    # Close any remaining position at end
+    # Close any remaining position at end (use last close from iteration)
     if position:
-        close = df['Close'].iloc[-1]
-        proceeds = close * position['shares']
+        exit_close = df['Close'].iloc[-1]
+        proceeds = exit_close * position['shares']
         trade_pnl = proceeds - (position['entry'] * position['shares'])
         cash += proceeds
-        trades.append({'type': 'SELL', 'pnl': trade_pnl, 'reason': 'END'})
+        trades.append({'type': 'SELL', 'price': exit_close, 'pnl': trade_pnl, 'reason': 'END'})
         if trade_pnl > 0:
             wins += 1
         else:
@@ -215,7 +230,8 @@ def backtest(ticker: str, initial_capital: float = 2000, years: int = 2) -> dict
             print(f"  {i+1}. BUY  @ ₹{t['price']:.2f} x {t['shares']} shares")
         else:
             pnl = t.get('pnl', 0)
-            print(f"  {i+1}. SELL @ ₹{close:.2f} ({pnl:+,.0f}) - {t.get('reason','')}")
+            sell_price = t.get('price', close)
+            print(f"  {i+1}. SELL @ ₹{sell_price:.2f} ({pnl:+,.0f}) - {t.get('reason','')}")
     
     return {
         'initial': initial_capital,
@@ -235,7 +251,12 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('--ticker', default='SBIN.NS')
     parser.add_argument('--capital', type=float, default=2000)
-    parser.add_argument('--years', type=int, default=2)
+    parser.add_argument('--years', type=int, default=1)  # Changed default to 1 year
+    parser.add_argument('--period', default=None, help='Custom period: 1mo, 3mo, 6mo, 1y, 2y, 5y')
     args = parser.parse_args()
     
-    backtest(args.ticker, args.capital, args.years)
+    # Use custom period or calculate from years
+    if args.period:
+        backtest(args.ticker, args.capital, period=args.period)
+    else:
+        backtest(args.ticker, args.capital, args.years)
