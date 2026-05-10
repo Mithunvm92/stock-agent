@@ -76,6 +76,7 @@ while True:
     print("[29] CSV - Backtest with CSV Data")
     print("[30] CSV - Download Instructions")
     print("[31] CSV - Download Data (curl)")
+    print("[32] Price Scanner - Stocks Under ₹1000")
     print("[0] Exit\n")
 
     choice = input("Select option: ").strip()
@@ -676,6 +677,16 @@ while True:
             print("Use option 29 to backtest")
         else:
             print("\n❌ Download failed")
+
+        pause()
+
+    elif choice == "32":
+
+        print("\n📊 Price Scanner - Stocks Under ₹1000\n")
+
+        run("python price_scanner.py")
+
+        print("\n✅ Scan complete! Saved to data/stocks_under_1000.txt")
 
         pause()
 
