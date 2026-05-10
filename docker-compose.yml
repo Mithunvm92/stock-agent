@@ -49,12 +49,30 @@ services:
       - "9090:9090"
 
     volumes:
-      - ./prometheus.yml:/etc/prometheus/prometheus.yml
       - prometheus_data:/prometheus
 
     command:
-      - "--config.file=/etc/prometheus/prometheus.yml"
-      - "--storage.tsdb.path=/prometheus"
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/usr/share/prometheus/console_libraries'
+      - '--web.console.templates=/usr/share/prometheus/consoles'
+
+    entrypoint:
+      - sh
+      - -c
+      - |
+        cat > /etc/prometheus/prometheus.yml << 'EOF'
+global:
+  scrape_interval: 15s
+scrape_configs:
+  - job_name: 'trading-agent'
+    static_configs:
+      - targets: ['host.docker.internal:8000']
+  - job_name: 'node-exporter'
+    static_configs:
+      - targets: ['node-exporter:9100']
+EOF
+        /bin/prometheus
 
     depends_on:
       - trading-agent
