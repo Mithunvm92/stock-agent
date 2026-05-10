@@ -235,9 +235,16 @@ class SwingBot:
     # ===================
     def generate_signal(self) -> Tuple[str, float, str]:
         """
-        Generate trading signal
+        Generate trading signal using enhanced PKScreener multi-indicator strategy
         
-        Returns: (signal, confidence, reason)
+        Weighted signals:
+        - RSI: 15% (oversold/overbought)
+        - MACD: 15% (crossovers)
+        - ATR Trailing Stop: 20% (key risk management!)
+        - Volume: 15% (price confirmation)
+        - MA Crossovers: 15% (trend)
+        - Price Action: 10% (patterns)
+        - Momentum: 10% (strength)
         """
         if self.df is None or len(self.df) < 50:
             return "HOLD", 0, "No data"
@@ -245,6 +252,7 @@ class SwingBot:
         df = self.calculate_indicators(self.df)
         latest = df.iloc[-1]
         prev = df.iloc[-2] if len(df) > 1 else latest
+        prev2 = df.iloc[-3] if len(df) > 2 else prev
         
         # Current values
         close = latest['Close']
@@ -254,97 +262,98 @@ class SwingBot:
         sma20 = latest['SMA20']
         sma50 = latest['SMA50']
         volume_ratio = latest['Volume_Ratio']
-        atr_pct = latest['ATR_Pct']
-        price_sma20_pct = ((close - sma20) / sma20) * 100
+        atr = latest['ATR']
         
-        # ===== SELL / EXIT CONDITIONS (check first!) =====
+        # ATR trailing stop (key risk management from PKScreener!)
+        key_value = 2
+        trailing_stop = close - (key_value * atr)
+        price_vs_trailing = close / trailing_stop if trailing_stop > 0 else 1
+        
+        # Price change
+        price_change = (close - df['Close'].iloc[-2]) / df['Close'].iloc[-2]
+        mom_5d = (close - df['Close'].iloc[-5]) / df['Close'].iloc[-5] if len(df) > 5 else 0
+        
+        # Signal weights
+        weights = {'rsi': 0.15, 'macd': 0.15, 'atr_trailing': 0.20, 'volume': 0.15, 
+                 'ma_crossover': 0.15, 'price_action': 0.10, 'momentum': 0.10}
+        
+        signals = {}
+        reasons = {}
+        
+        # 1. RSI (15%)
+        if rsi < 30: signals['rsi'] = 0.8; reasons['rsi'] = f"RSI oversold ({rsi:.0f})"
+        elif rsi < 40: signals['rsi'] = 0.65; reasons['rsi'] = f"RSI low ({rsi:.0f})"
+        elif rsi > 70: signals['rsi'] = 0.2; reasons['rsi'] = f"RSI overbought ({rsi:.0f})"
+        elif rsi > 60: signals['rsi'] = 0.35; reasons['rsi'] = f"RSI high ({rsi:.0f})"
+        else: signals['rsi'] = 0.5; reasons['rsi'] = f"RSI neutral"
+        
+        # 2. MACD (15%)
+        if prev_macd_hist <= 0 and macd_hist > 0: signals['macd'] = 0.85; reasons['macd'] = "MACD bullish cross"
+        elif prev_macd_hist >= 0 and macd_hist < 0: signals['macd'] = 0.15; reasons['macd'] = "MACD bearish cross"
+        elif macd_hist > prev_macd_hist: signals['macd'] = 0.7; reasons['macd'] = "MACD rising"
+        elif macd_hist < prev_macd_hist: signals['macd'] = 0.3; reasons['macd'] = "MACD falling"
+        else: signals['macd'] = 0.5
+        
+        # 3. ATR Trailing Stop (20%) - Key!
+        if price_vs_trailing > 1.02: signals['atr_trailing'] = 0.75; reasons['atr_trailing'] = "Above ATR stop"
+        elif price_vs_trailing < 0.98: signals['atr_trailing'] = 0.25; reasons['atr_trailing'] = "Below ATR stop"
+        else: signals['atr_trailing'] = 0.5
+        
+        # 4. Volume (15%)
+        if volume_ratio > 2 and price_change > 0.01: signals['volume'] = 0.85; reasons['volume'] = f"Vol surge"
+        elif volume_ratio > 1.5 and price_change > 0: signals['volume'] = 0.7; reasons['volume'] = "High vol"
+        elif volume_ratio > 2 and price_change < -0.01: signals['volume'] = 0.15; reasons['volume'] = "Vol surge -drop"
+        elif volume_ratio > 1.5 and price_change < 0: signals['volume'] = 0.3; reasons['volume'] = "High vol -loss"
+        else: signals['volume'] = 0.5
+        
+        # 5. MA Crossover (15%)
+        if close > sma20 > sma50: signals['ma_crossover'] = 0.75; reasons['ma_crossover'] = "Above 20>50"
+        elif close < sma20 < sma50: signals['ma_crossover'] = 0.25; reasons['ma_crossover'] = "Below 20<50"
+        elif close > sma20: signals['ma_crossover'] = 0.6; reasons['ma_crossover'] = "Above SMA20"
+        else: signals['ma_crossover'] = 0.4
+        
+        # 6. Price Action (10%)
+        if price_change > 0.03: signals['price_action'] = 0.7; reasons['price_action'] = "Strong gain"
+        elif price_change > 0.01: signals['price_action'] = 0.6; reasons['price_action'] = "Gaining"
+        elif price_change < -0.03: signals['price_action'] = 0.3; reasons['price_action'] = "Strong loss"
+        elif price_change < -0.01: signals['price_action'] = 0.4; reasons['price_action'] = "Losing"
+        else: signals['price_action'] = 0.5
+        
+        # 7. Momentum (10%)
+        if mom_5d > 0.05: signals['momentum'] = 0.75; reasons['momentum'] = "Strong +5d"
+        elif mom_5d > 0.02: signals['momentum'] = 0.6; reasons['momentum'] = "Weak +5d"
+        elif mom_5d < -0.05: signals['momentum'] = 0.25; reasons['momentum'] = "Strong -5d"
+        elif mom_5d < -0.02: signals['momentum'] = 0.4; reasons['momentum'] = "Weak -5d"
+        else: signals['momentum'] = 0.5
+        
+        # Calculate weighted score
+        weighted_score = sum(signals.get(k, 0.5) * v for k, v in weights.items())
+        normalized_score = weighted_score * 100
+        confidence = min(100, abs(normalized_score - 50) * 2)
+        
+        # Exit conditions (check position first!)
         if self.position and self.position['signal'] == 'BUY':
             pnl_pct = (close - self.position['entry']) / self.position['entry']
-            exit_reason = ""
-            exit_score = 0
-            
-            # 1. Stop loss hit
-            if pnl_pct <= -self.stop_loss_pct:
-                exit_score = 5
-                exit_reason = f"Stop loss ({pnl_pct*100:.1f}%)"
-            
-            # 2. Target reached
-            elif pnl_pct >= self.target_pct:
-                exit_score = 5
-                exit_reason = f"Target hit ({pnl_pct*100:.1f}%)"
-            
-            # 3. RSI overbought + weakening MACD
-            elif rsi > 65 and macd_hist < prev_macd_hist:
-                exit_score = 4
-                exit_reason = f"RSI overbought + MACD weakening"
-            
-            # 4. Price below SMA20 (trend reversal)
-            elif close < sma20:
-                exit_score = 3
-                exit_reason = "Price below SMA20"
-            
-            # 5. Time-based exit (5+ days in profit)
-            elif 'opened_at' in self.position:
-                days_held = (datetime.now() - self.position['opened_at']).days
-                if days_held >= 5 and pnl_pct > 0:
-                    exit_score = 3
-                    exit_reason = f"Time exit ({days_held}d, +{pnl_pct*100:.1f}%)"
-            
-            if exit_score >= 3:
-                return "SELL", min(exit_score * 20, 100), exit_reason
+            if close < trailing_stop: return "SELL", 95, "ATR stop hit"
+            if pnl_pct >= 0.04: return "SELL", 90, "Target hit"
+            if pnl_pct <= -0.02: return "SELL", 95, "Stop loss"
+            if rsi > 65 and macd_hist < prev_macd_hist: return "SELL", 70, "RSI overbought"
         
-        # ===== NEW BUY SIGNALS =====
-        buy_score = 0
-        buy_reasons = []
-        
-        # 1. RSI in oversold zone (<45)
-        if rsi < 35:
-            buy_score += 4
-            buy_reasons.append(f"RSI oversold ({rsi:.0f})")
-        elif rsi < 50:
-            buy_score += 2
-            buy_reasons.append(f"RSI low ({rsi:.0f})")
-        
-        # 2. MACD bullish (histogram turning positive or rising)
-        if prev_macd_hist < 0 and macd_hist > 0:
-            buy_score += 4
-            buy_reasons.append("MACD bullish cross")
-        elif macd_hist > 0 and macd_hist > prev_macd_hist:
-            buy_score += 2
-            buy_reasons.append("MACD rising")
-        
-        # 3. Price in uptrend (above key moving averages)
-        if close > sma20 > 0:
-            buy_score += 2
-            buy_reasons.append(f"Above SMA20 (+{price_sma20_pct:.1f}%)")
-        if close > sma50 > 0:
-            buy_score += 1
-            buy_reasons.append("Above SMA50")
-        
-        # 4. Volume confirmation
-        if volume_ratio > 1.0:
-            buy_score += 1
-            buy_reasons.append(f"Vol {volume_ratio:.1f}x")
-        
-        # 5. Low volatility (safe entry)
-        if atr_pct < 3.0:
-            buy_score += 1
-            buy_reasons.append(f"Low ATR ({atr_pct:.1f}%)")
-        
-        # Check for existing position (no new entry if already in)
+        # Check for existing position
         if self.position:
-            return "HOLD", buy_score * 10, f"In position (entry: ₹{self.position['entry']:.0f})"
+            return "HOLD", confidence, f"In position @ ₹{self.position['entry']:.0f}"
         
-        # ===== DECISION =====
-        if buy_score >= 5:
-            confidence = min(buy_score * 12, 100)
-            return "BUY", confidence, "; ".join(buy_reasons[:3])
+        # Buy signal (score >= 65)
+        if normalized_score >= 65:
+            top_reasons = sorted([(k, v) for k, v in reasons.items() if signals.get(k, 0.5) > 0.6], 
+                        key=lambda x: signals.get(x[0]), reverse=True)[:3]
+            return "BUY", confidence, "; ".join([reasons.get(r[0]) for r in top_reasons])
         
-        if buy_score >= 3:
-            confidence = min(buy_score * 15, 90)
-            return "BUY", confidence, "; ".join(buy_reasons[:2])
+        # Sell signal (score <= 35)
+        if normalized_score <= 35:
+            return "SELL", confidence, "Weak signals"
         
-        return "HOLD", max(buy_score * 8, 30), f"RSI={rsi:.0f}, MACD={macd_hist:.1f}, Price={price_sma20_pct:+.1f}% vs SMA20"
+        return "HOLD", confidence, f"Neutral ({normalized_score:.0f})"
     
     # ===================
     # POSITION SIZING
