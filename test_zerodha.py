@@ -21,8 +21,8 @@ def test_token(request_token):
         profile = kite.profile()
         
         print("✅ SUCCESS!")
-        print(f"User: {profile.user_name}")
-        print(f"Email: {profile.email}")
+        print(f"User: {profile["user_name"]}")
+        print(f"Email: {profile["email"]}")
         print(f"Access Token: {access_token}")
         return access_token
     except Exception as e:
