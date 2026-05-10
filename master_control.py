@@ -184,10 +184,7 @@ while True:
     # =====================================
     elif choice == "11":
 
-        run(
-            "docker-compose exec trading-agent "
-            "python main.py --stats"
-        )
+        run("python portfolio_summary.py")
 
         pause()
 
