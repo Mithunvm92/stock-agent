@@ -103,6 +103,7 @@ EOF
 
     volumes:
       - grafana_data:/var/lib/grafana
+      - ./grafana/provisioning:/etc/grafana/provisioning
 
     environment:
       GF_SECURITY_ADMIN_USER: admin
