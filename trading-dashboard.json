@@ -41,7 +41,7 @@
       "pluginVersion": "10.4.1",
       "targets": [
         {
-          "expr": "trading_total_trades",
+          "expr": "bot_trade_count",
           "refId": "A"
         }
       ],
@@ -82,7 +82,7 @@
       },
       "targets": [
         {
-          "expr": "trading_current_capital",
+          "expr": "bot_current_capital_inr",
           "refId": "A"
         }
       ],
@@ -118,7 +118,7 @@
       },
       "targets": [
         {
-          "expr": "trading_win_rate",
+          "expr": "bot_win_rate_percent",
           "refId": "A"
         }
       ],
@@ -154,7 +154,7 @@
       },
       "targets": [
         {
-          "expr": "trading_open_positions",
+          "expr": "bot_open_positions_count",
           "refId": "A"
         }
       ],
@@ -181,7 +181,7 @@
       "id": 5,
       "targets": [
         {
-          "expr": "trading_model_confidence",
+          "expr": "bot_latest_signal_confidence",
           "refId": "A"
         }
       ],
@@ -208,7 +208,7 @@
       "id": 6,
       "targets": [
         {
-          "expr": "trading_signal_value",
+          "expr": "bot_total_pnl_inr",
           "refId": "A"
         }
       ],
