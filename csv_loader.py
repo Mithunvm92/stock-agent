@@ -157,7 +157,6 @@ if __name__ == "__main__":
     else:
         print(f"\n📁 No CSV files found in {args.csv_dir}/")
         print(download_instructions(args.ticker))
-        return
     
     # Try to load
     df = load_csv(args.ticker, args.csv_dir)
