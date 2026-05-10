@@ -70,7 +70,7 @@ while True:
     print("[26] CSV - Backtest with CSV Data")
     print("[27] CSV - Download Instructions")
     print("[28] CSV - Download Data")
-    print("[29] Price Scanner - Stocks < ₹1000")
+    print("[29] Price Scanner - Stocks Under ₹1000")
     print("[0] Exit\n")
 
     choice = input("Select option: ").strip()
