@@ -441,6 +441,23 @@ class SwingBot:
             
             self.current_capital -= cost
             
+            # === LIVE TRADING ===
+            if self.mode == 'live':
+                try:
+                    from brokers.zerodha import ZerodhaBroker
+                    
+                    broker = ZerodhaBroker()
+                    order_id = broker.place_market_order(
+                        symbol=self.ticker,
+                        transaction_type='BUY',
+                        quantity=shares,
+                        product='MIS'
+                    )
+                    print(f"   📝 Order ID: {order_id}")
+                    
+                except Exception as e:
+                    print(f"   ⚠️ Live order failed: {e}")
+            
             print(f"\n{'='*40}")
             if not SILENT: print(f"✅ BUY EXECUTED")
             print(f"{'='*40}")
@@ -492,6 +509,24 @@ class SwingBot:
             print(f"   P&L:    ₹{pnl:+.2f} ({pnl_pct:+.1f}%)")
             print(f"   Capital: ₹{self.current_capital:.2f}")
             print(f"   Reason: {reason}")
+            
+            # === LIVE TRADING ===
+            if self.mode == 'live':
+                try:
+                    from brokers.zerodha import ZerodhaBroker
+                    
+                    broker = ZerodhaBroker()
+                    order_id = broker.place_market_order(
+                        symbol=self.ticker,
+                        transaction_type='SELL',
+                        quantity=self.position['shares'],
+                        product='MIS'
+                    )
+                    print(f"   📝 Order ID: {order_id}")
+                    
+                except Exception as e:
+                    print(f"   ⚠️ Live order failed: {e}")
+            
             print(f"{'='*40}\n")
             
             self.position = None
@@ -662,7 +697,12 @@ def main():
         bot.execute_signal(signal, confidence, reason)
         bot.print_status()
     
-    # Or run loop
+    # LIVE MODE - execute signals in real-time
+    if args.mode == 'live' and signal != 'HOLD':
+        bot.execute_signal(signal, confidence, reason)
+        bot.print_status()
+    
+    # Run loop
     if args.interval > 0 and args.mode == 'live':
         bot.run(args.interval, args.iterations)
 
