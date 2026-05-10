@@ -1,10 +1,6 @@
 """
 Swing Trading Bot - Complete implementation for NSE swing trading
-v1 — Uses RSI + MACD + Moving Averages with proper risk management
-
-Usage:
-    python swing_bot.py --ticker RELIANCE.NS --capital 100000 --mode paper
-    python swing_bot.py --ticker SBIN.NS --mode live --interval 300
+v2 — Silent mode, proxy support, 2000 INR capital
 """
 
 import os
@@ -18,10 +14,24 @@ from typing import Optional, Dict, Tuple
 import pandas as pd
 import numpy as np
 import yfinance as yf
-import requests
 
 # Suppress warnings
 warnings.filterwarnings('ignore')
+
+# Silent mode - reduce output
+SILENT = os.environ.get('SILENT', '0') == '1'
+PROXY = os.environ.get('HTTPS_PROXY') or os.environ.get('HTTP_PROXY')
+
+# Silent print helper
+def slog(*args, **kwargs):
+    if not SILENT:
+        print(*args, **kwargs)
+
+# Set proxy if configured
+if PROXY:
+    os.environ['http_proxy'] = PROXY
+    os.environ['https_proxy'] = PROXY
+    slog(f"🔐 Using proxy: {PROXY}")
 
 
 class SwingBot:
@@ -43,7 +53,7 @@ class SwingBot:
     def __init__(
         self,
         ticker: str = "RELIANCE.NS",
-        initial_capital: float = 100000,
+        initial_capital: float = 2000,
         mode: str = "paper"  # "paper" or "live"
     ):
         self.ticker = ticker
@@ -86,7 +96,7 @@ class SwingBot:
                 if len(cached) > 100:
                     # Cache valid for 1 day (reduced API calls)
                     age = (datetime.now() - cached.index[-1]).days
-                    print(f"📂 Using cached data ({len(cached)} rows, {age}d old)")
+                    if not SILENT: print(f"📂 Using cached data ({len(cached)} rows, {age}d old)")
                     self.df = cached
                     return cached
             except:
@@ -113,7 +123,7 @@ class SwingBot:
                     return pd.DataFrame()
         
         # Fetch fresh data with retry
-        print(f"📥 Fetching {self.ticker}...")
+        if not SILENT: print(f"📥 Fetching {self.ticker}...")
         
         for attempt in range(3):
             try:
@@ -124,23 +134,21 @@ class SwingBot:
                     # Save cache
                     os.makedirs("db", exist_ok=True)
                     df.to_csv(cache_file)
-                    print(f"✅ Loaded {len(df)} rows")
+                    if not SILENT: print(f"✅ Loaded {len(df)} rows")
                     self.df = df
                     return df
                     
             except Exception as e:
                 if "Too Many Requests" in str(e) or "rate limited" in str(e):
-                    # Set rate limit for 15 minutes
+                    # Set rate limit for 15 minutes (silent)
                     os.makedirs("db", exist_ok=True)
                     with open(rate_file, 'w') as f:
                         f.write((datetime.now() + timedelta(minutes=15)).isoformat())
-                    print(f"⚠️ Rate limited! Using cache. Try after 15 min.")
-                    # Try local cache
+                    # Use local cache silently
                     if os.path.exists(cache_file):
                         try:
                             cached = pd.read_csv(cache_file, index_col=0, parse_dates=True)
                             if len(cached) > 50:
-                                print("📂 Using fallback cache")
                                 self.df = cached
                                 return cached
                         except:
@@ -149,10 +157,10 @@ class SwingBot:
                     
                 if attempt < 2:
                     wait = (attempt + 1) * 5
-                    print(f"⚠️ Attempt {attempt+1} failed, retrying in {wait}s...")
+                    if not SILENT: print(f"⚠️ Attempt {attempt+1} failed, retrying in {wait}s...")
                     time.sleep(wait)
         
-        print(f"❌ Fetch failed for {self.ticker}")
+        if not SILENT: print(f"❌ Fetch failed for {self.ticker}")
         return pd.DataFrame()
     
     # ===================
@@ -406,7 +414,7 @@ class SwingBot:
             self.current_capital -= cost
             
             print(f"\n{'='*40}")
-            print(f"✅ BUY EXECUTED")
+            if not SILENT: print(f"✅ BUY EXECUTED")
             print(f"{'='*40}")
             print(f"   Ticker: {self.ticker}")
             print(f"   Price:  ₹{price:.2f}")
@@ -492,7 +500,7 @@ class SwingBot:
             
             df.to_csv(log_file, index=False)
         except Exception as e:
-            print(f"⚠️ Log error: {e}")
+            if not SILENT: print(f"⚠️ Log error: {e}")
     
     # ===================
     # STATUS
