@@ -259,6 +259,7 @@ if __name__ == "__main__":
     parser.add_argument('--period', default=None, help='Custom period: 1mo, 3mo, 6mo, 1y, 2y, 5y')
     parser.add_argument('--csv', action='store_true', help='Use CSV data instead of Yahoo')
     parser.add_argument('--csv-dir', default='data', help='CSV directory')
+    parser.add_argument('--multi', help='Multi-symbol backtest: SBIN,RELIANCE,INFY')
     args = parser.parse_args()
     
     # Use CSV or period or years
@@ -275,5 +276,75 @@ if __name__ == "__main__":
         
     elif args.period:
         backtest(args.ticker, args.capital, period=args.period)
+    elif args.multi:
+        # Multi-symbol backtest
+        from csv_loader import load_csv
+        
+        # Common NSE stocks
+        symbols = args.multi.split(',')
+        
+        print(f"\n{'='*50}")
+        print(f"   MULTI-SYMBOL BACKTEST")
+        print(f"{'='*50}")
+        print(f"Symbols: {symbols}")
+        print(f"Capital per symbol: ₹{args.capital:,.0f}")
+        print(f"{'='*50}\n")
+        
+        results = []
+        
+        for symbol in symbols:
+            symbol = symbol.strip().upper()
+            if not symbol.endswith('.NS'):
+                symbol = symbol + '.NS'
+            
+            print(f"📊 Testing {symbol}...")
+            
+            # Try to load CSV
+            df = load_csv(symbol, args.csv_dir)
+            
+            if len(df) < 20:
+                # Try yfinance if no CSV
+                try:
+                    import yfinance as yf
+                    stock = yf.Ticker(symbol)
+                    df = stock.history(period="1y", auto_adjust=True)
+                except:
+                    print(f"  ⚠️ No data")
+                    continue
+            
+            if df is None or len(df) < 20:
+                print(f"  ⚠️ No data")
+                continue
+            
+            # Run backtest
+            result = backtest(symbol, args.capital, df=df)
+            
+            if result:
+                results.append({
+                    'symbol': symbol,
+                    'final': result.get('final', 0),
+                    'pnl': result.get('pnl', 0),
+                    'pnl_pct': result.get('pnl_pct', 0),
+                    'wins': result.get('wins', 0),
+                    'losses': result.get('losses', 0),
+                    'win_rate': result.get('win_rate', 0),
+                    'trades': result.get('trades', 0)
+                })
+        
+        # Print summary
+        print(f"\n{'='*50}")
+        print(f"   MULTI-SYMBOL SUMMARY")
+        print(f"{'='*50}")
+        
+        total_pnl = 0
+        for r in results:
+            print(f"  {r['symbol']:12} ₹{r['final']:8,.0f}  PnL: {r['pnl']:+7,.0f} ({r['pnl_pct']:+5.1f}%)  WR: {r['win_rate']:5.0f}%  ({r['wins']}-{r['losses']})")
+            total_pnl += r['pnl']
+        
+        print(f"{'='*50}")
+        total_capital = args.capital * len(results)
+        print(f"  TOTAL:        ₹{total_capital:,.0f}  PnL: {total_pnl:+,.0f} ({total_pnl/total_capital*100:+.1f}%)")
+        print(f"{'='*50}")
+        
     else:
         backtest(args.ticker, args.capital, args.years)
