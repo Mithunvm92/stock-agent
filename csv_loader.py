@@ -139,7 +139,7 @@ Format: Date,Open,High,Low,Close,Volume
 
 
 def download_csv(ticker: str, period: str = "max", csv_dir: str = "data") -> bool:
-    """Download CSV data using yfinance with retry logic
+    """Download CSV using yfinance or NSEpy
     
     Args:
         ticker: Stock ticker
@@ -154,9 +154,9 @@ def download_csv(ticker: str, period: str = "max", csv_dir: str = "data") -> boo
     
     csv_path = os.path.join(csv_dir, f"{symbol}.csv")
     
+    # Try yfinance first
     print(f"📥 Downloading {ticker} data via yfinance...")
     
-    # Try periods in order of preference
     period_options = [period, '1y', '6mo', '3mo', '1mo']
     
     for attempt_period in period_options:
@@ -168,33 +168,68 @@ def download_csv(ticker: str, period: str = "max", csv_dir: str = "data") -> boo
             df = stock.history(period=attempt_period, auto_adjust=True)
             
             if df is None or len(df) < 10:
-                print(f"⚠️ Period {attempt_period}: No data")
                 continue
             
-            # Reset index to have Date column
             df = df.reset_index()
-            
-            # Save as CSV
             df.to_csv(csv_path, index=False)
             
             size = os.path.getsize(csv_path)
-            print(f"✅ Saved to {csv_path} ({size/1024:.1f} KB, {len(df)} rows from {attempt_period})")
+            print(f"✅ Saved to {csv_path} ({size/1024:.1f} KB, {len(df)} rows)")
             return True
             
         except Exception as e:
-            error_msg = str(e)
-            if 'Too Many Requests' in error_msg or '429' in error_msg:
-                print(f"⚠️ Rate limited, trying smaller period...")
-                time.sleep(2)
+            if 'Too Many Requests' in str(e):
+                time.sleep(1)
                 continue
-            else:
-                print(f"❌ Error: {e}")
-                return False
     
-    # If all failed, offer instructions
-    print(f"\n❌ Rate limited on all periods")
+    # Try NSEpy as fallback (for NSE stocks only)
+    print(f"📥 Trying NSEpy (Indian stocks)...")
+    
+    try:
+        from nsepy import get_history
+        from datetime import datetime, timedelta
+        
+        # Calculate date range
+        if period == 'max':
+            days = 365 * 5
+        elif period == '5y':
+            days = 365 * 5
+        elif period == '2y':
+            days = 365 * 2
+        elif period == '1y':
+            days = 365
+        elif period == '6mo':
+            days = 180
+        elif period == '3mo':
+            days = 90
+        elif period == '1mo':
+            days = 30
+        else:
+            days = 365
+        
+        end_date = datetime.now()
+        start_date = end_date - timedelta(days=days)
+        
+        # NSEpy uses symbol without .NS
+        nse_symbol = symbol.upper()
+        
+        df = get_history(symbol=nse_symbol, start=start_date, end=end_date)
+        
+        if df is None or len(df) < 10:
+            print(f"⚠️ NSEpy failed for {nse_symbol}")
+        else:
+            df = df.reset_index()
+            df.to_csv(csv_path, index=False)
+            size = os.path.getsize(csv_path)
+            print(f"✅ Saved via NSEpy ({size/1024:.1f} KB, {len(df)} rows)")
+            return True
+            
+    except Exception as e:
+        print(f"⚠️ NSEpy error: {e}")
+    
+    print(f"\n❌ Rate limited - all sources failed")
     print("📌 Options:")
-    print("   1. Wait 15 minutes and try again")
+    print("   1. Wait 15 minutes and try 1mo period")
     print("   2. Use option 30 for manual download")
     return False
 
