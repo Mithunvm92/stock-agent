@@ -1,0 +1,4 @@
+timestamp,ticker,signal,price,shares,confidence,reason,stop_loss,take_profit,pnl,capital,filters_passed,total_filters
+2026-05-09 22:16:28,HDFCBANK.NS,BUY,780.85,1,81.42,ML + 7/7 filters,766.79,804.28,0,1219.15,0,0
+2026-05-09 22:16:33,KOTAKBANK.NS,BUY,380.8,1,69.16,ML + 6/7 filters,373.95,392.22,0,838.35,0,0
+2026-05-09 22:16:36,ITC.NS,SELL,307.45,1,68.54,ML + 6/7 filters,312.98,298.23,0,530.9,0,0

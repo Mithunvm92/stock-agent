@@ -1,0 +1,161 @@
+services:
+
+  trading-agent:
+
+    build: .
+
+    container_name: trading-agent
+
+    restart: unless-stopped
+
+    ports:
+      - "8000:8000"
+
+    volumes:
+      - ./models:/app/models
+      - ./db:/app/db
+
+    env_file:
+      - .env
+
+    environment:
+      TICKER: RELIANCE.NS
+      INITIAL_CAPITAL: 2000
+
+      DATABASE_URL: postgresql://admin:admin123@postgres:5432/tradingdb
+
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+
+    command: python main.py --live 300
+
+    depends_on:
+      - postgres
+      - redis
+
+    networks:
+      - trading-net
+
+
+  prometheus:
+
+    image: prom/prometheus:latest
+
+    container_name: prometheus
+
+    restart: unless-stopped
+
+    ports:
+      - "9090:9090"
+
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus_data:/prometheus
+
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+      - "--storage.tsdb.path=/prometheus"
+
+    depends_on:
+      - trading-agent
+
+    networks:
+      - trading-net
+
+
+  grafana:
+
+    image: grafana/grafana:latest
+
+    container_name: grafana
+
+    restart: unless-stopped
+
+    ports:
+      - "3000:3000"
+
+    volumes:
+      - grafana_data:/var/lib/grafana
+
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: admin123
+
+    depends_on:
+      - prometheus
+
+    networks:
+      - trading-net
+
+
+  postgres:
+
+    image: postgres:16
+
+    container_name: trading-postgres
+
+    restart: unless-stopped
+
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin123
+      POSTGRES_DB: tradingdb
+
+    ports:
+      - "5432:5432"
+
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+    networks:
+      - trading-net
+
+
+  redis:
+
+    image: redis:7
+
+    container_name: trading-redis
+
+    restart: unless-stopped
+
+    ports:
+      - "6379:6379"
+
+    volumes:
+      - redis_data:/data
+
+    networks:
+      - trading-net
+
+
+  node-exporter:
+
+    image: prom/node-exporter
+
+    container_name: node-exporter
+
+    restart: unless-stopped
+
+    ports:
+      - "9100:9100"
+
+    networks:
+      - trading-net
+
+
+volumes:
+
+  prometheus_data:
+
+  grafana_data:
+
+  postgres_data:
+
+  redis_data:
+
+
+networks:
+
+  trading-net:
+    driver: bridge

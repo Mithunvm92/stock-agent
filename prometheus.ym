@@ -1,0 +1,8 @@
+global:
+  scrape_interval: 15s # Scrape metrics every 15 seconds
+
+scrape_configs:
+  - job_name: 'trading-agent'
+    static_configs:
+      # 'trading-agent' is the service name defined in docker-compose
+      - targets: ['host.docker.internal:8000']

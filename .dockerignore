@@ -1,0 +1,7 @@
+venv/
+__pycache__/
+*.pyc
+.git/
+models/*.pkl
+db/*.csv
+.env

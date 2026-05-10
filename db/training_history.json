@@ -1,0 +1,1051 @@
+[
+  {
+    "timestamp": "2026-05-08T15:41:09.420747",
+    "ticker": "RELIANCE.NS",
+    "accuracy": 49.16,
+    "train_count": 1
+  },
+  {
+    "timestamp": "2026-05-08T15:52:13.866153",
+    "ticker": "RELIANCE.NS",
+    "accuracy": 52.22,
+    "features_used": 15,
+    "train_count": 1
+  },
+  {
+    "timestamp": "2026-05-08T15:53:04.788059",
+    "ticker": "RELIANCE.NS",
+    "accuracy": 52.22,
+    "features_used": 15,
+    "train_count": 1
+  },
+  {
+    "timestamp": "2026-05-08T15:57:12.493846",
+    "ticker": "RELIANCE.NS",
+    "accuracy": 52.22,
+    "features_used": 15,
+    "train_count": 1
+  },
+  {
+    "timestamp": "2026-05-08T16:03:26.739609",
+    "ticker": "RELIANCE.NS",
+    "accuracy": 52.22,
+    "features_used": 15,
+    "train_count": 1
+  },
+  {
+    "timestamp": "2026-05-08T16:08:12.844996",
+    "ticker": "RELIANCE.NS",
+    "accuracy": 52.22,
+    "features_used": 15,
+    "train_count": 1
+  },
+  {
+    "timestamp": "2026-05-08T16:13:16.981293",
+    "ticker": "RELIANCE.NS",
+    "accuracy": 47.78,
+    "features_used": 15,
+    "train_count": 1
+  },
+  {
+    "timestamp": "2026-05-08T16:35:02.177001",
+    "ticker": "RELIANCE.NS",
+    "accuracy": 52.22,
+    "features_used": 15,
+    "train_count": 1
+  },
+  {
+    "timestamp": "2026-05-08T16:35:25.623928",
+    "ticker": "TCS.NS",
+    "accuracy": 45.56,
+    "features_used": 15,
+    "train_count": 1
+  },
+  {
+    "timestamp": "2026-05-08T16:35:42.329529",
+    "ticker": "HDFCBANK.NS",
+    "accuracy": 57.78,
+    "features_used": 15,
+    "train_count": 1
+  },
+  {
+    "timestamp": "2026-05-08T16:35:58.249765",
+    "ticker": "INFY.NS",
+    "accuracy": 52.22,
+    "features_used": 15,
+    "train_count": 1
+  },
+  {
+    "timestamp": "2026-05-08T16:36:14.110598",
+    "ticker": "ICICIBANK.NS",
+    "accuracy": 67.78,
+    "features_used": 15,
+    "train_count": 1
+  },
+  {
+    "timestamp": "2026-05-08T16:36:31.246997",
+    "ticker": "HINDUNILVR.NS",
+    "accuracy": 53.33,
+    "features_used": 15,
+    "train_count": 1
+  },
+  {
+    "timestamp": "2026-05-08T16:36:53.430352",
+    "ticker": "SBIN.NS",
+    "accuracy": 54.44,
+    "features_used": 15,
+    "train_count": 1
+  },
+  {
+    "timestamp": "2026-05-08T16:37:13.278727",
+    "ticker": "BHARTIARTL.NS",
+    "accuracy": 52.22,
+    "features_used": 15,
+    "train_count": 1
+  },
+  {
+    "timestamp": "2026-05-08T16:37:30.386185",
+    "ticker": "KOTAKBANK.NS",
+    "accuracy": 51.11,
+    "features_used": 15,
+    "train_count": 1
+  },
+  {
+    "timestamp": "2026-05-08T16:37:51.678836",
+    "ticker": "ITC.NS",
+    "accuracy": 58.89,
+    "features_used": 15,
+    "train_count": 1
+  },
+  {
+    "timestamp": "2026-05-08T16:38:12.318100",
+    "ticker": "LT.NS",
+    "accuracy": 54.44,
+    "features_used": 15,
+    "train_count": 1
+  },
+  {
+    "timestamp": "2026-05-08T16:38:30.412383",
+    "ticker": "AXISBANK.NS",
+    "accuracy": 67.78,
+    "features_used": 15,
+    "train_count": 1
+  },
+  {
+    "timestamp": "2026-05-08T16:38:45.390952",
+    "ticker": "ASIANPAINT.NS",
+    "accuracy": 45.56,
+    "features_used": 15,
+    "train_count": 1
+  },
+  {
+    "timestamp": "2026-05-08T16:39:08.648668",
+    "ticker": "MARUTI.NS",
+    "accuracy": 66.67,
+    "features_used": 15,
+    "train_count": 1
+  },
+  {
+    "timestamp": "2026-05-08T16:39:28.557527",
+    "ticker": "HCLTECH.NS",
+    "accuracy": 50.0,
+    "features_used": 15,
+    "train_count": 1
+  },
+  {
+    "timestamp": "2026-05-08T16:39:46.145403",
+    "ticker": "SUNPHARMA.NS",
+    "accuracy": 57.78,
+    "features_used": 15,
+    "train_count": 1
+  },
+  {
+    "timestamp": "2026-05-08T16:40:03.692975",
+    "ticker": "TITAN.NS",
+    "accuracy": 58.89,
+    "features_used": 15,
+    "train_count": 1
+  },
+  {
+    "timestamp": "2026-05-08T16:40:23.731460",
+    "ticker": "BAJFINANCE.NS",
+    "accuracy": 62.22,
+    "features_used": 15,
+    "train_count": 1
+  },
+  {
+    "timestamp": "2026-05-08T16:40:46.416973",
+    "ticker": "WIPRO.NS",
+    "accuracy": 64.44,
+    "features_used": 15,
+    "train_count": 1
+  },
+  {
+    "timestamp": "2026-05-08T16:41:04.354711",
+    "ticker": "ULTRACEMCO.NS",
+    "accuracy": 54.44,
+    "features_used": 15,
+    "train_count": 1
+  },
+  {
+    "timestamp": "2026-05-08T16:41:23.692874",
+    "ticker": "NESTLEIND.NS",
+    "accuracy": 56.67,
+    "features_used": 15,
+    "train_count": 1
+  },
+  {
+    "timestamp": "2026-05-08T16:41:47.113233",
+    "ticker": "TATAMOTORS.NS",
+    "accuracy": 52.75,
+    "features_used": 15,
+    "train_count": 1
+  },
+  {
+    "timestamp": "2026-05-08T16:42:06.840933",
+    "ticker": "POWERGRID.NS",
+    "accuracy": 51.11,
+    "features_used": 15,
+    "train_count": 1
+  },
+  {
+    "timestamp": "2026-05-08T16:42:26.202633",
+    "ticker": "NTPC.NS",
+    "accuracy": 68.89,
+    "features_used": 15,
+    "train_count": 1
+  },
+  {
+    "timestamp": "2026-05-08T16:42:46.658596",
+    "ticker": "TECHM.NS",
+    "accuracy": 51.11,
+    "features_used": 15,
+    "train_count": 1
+  },
+  {
+    "timestamp": "2026-05-08T16:43:03.975408",
+    "ticker": "M&M.NS",
+    "accuracy": 63.33,
+    "features_used": 15,
+    "train_count": 1
+  },
+  {
+    "timestamp": "2026-05-08T16:43:22.220111",
+    "ticker": "TATASTEEL.NS",
+    "accuracy": 65.56,
+    "features_used": 15,
+    "train_count": 1
+  },
+  {
+    "timestamp": "2026-05-08T16:43:43.521258",
+    "ticker": "INDUSINDBK.NS",
+    "accuracy": 62.22,
+    "features_used": 15,
+    "train_count": 1
+  },
+  {
+    "timestamp": "2026-05-08T16:58:23.238339",
+    "ticker": "RELIANCE.NS",
+    "accuracy": 52.22,
+    "features_used": 15,
+    "train_count": 1
+  },
+  {
+    "timestamp": "2026-05-08T17:00:29.274041",
+    "ticker": "RELIANCE.NS",
+    "accuracy": 52.22,
+    "features_used": 15,
+    "train_count": 1
+  },
+  {
+    "timestamp": "2026-05-09T03:13:10.846003",
+    "ticker": "RELIANCE.NS",
+    "accuracy": 52.22,
+    "features_used": 15,
+    "train_count": 1
+  },
+  {
+    "timestamp": "2026-05-09T20:12:12.511766",
+    "ticker": "RELIANCE.NS",
+    "accuracy": 52.22,
+    "features_used": 15,
+    "train_count": 1
+  },
+  {
+    "timestamp": "2026-05-09T20:15:08.213179",
+    "ticker": "RELIANCE.NS",
+    "accuracy": 52.22,
+    "features_used": 15,
+    "train_count": 1
+  },
+  {
+    "timestamp": "2026-05-09T20:40:16.757118",
+    "ticker": "RELIANCE.NS",
+    "accuracy": 52.22,
+    "features_used": 15,
+    "train_count": 1
+  },
+  {
+    "timestamp": "2026-05-09T21:53:51.890924",
+    "ticker": "RELIANCE.NS",
+    "accuracy": 52.22,
+    "features_used": 15,
+    "train_count": 1
+  },
+  {
+    "timestamp": "2026-05-09T22:03:00.059933",
+    "ticker": "RELIANCE.NS",
+    "accuracy": 52.22,
+    "features_used": 15,
+    "train_count": 1
+  },
+  {
+    "timestamp": "2026-05-09T22:06:09.472725",
+    "ticker": "RELIANCE.NS",
+    "accuracy": 52.22,
+    "features_used": 15,
+    "train_count": 1
+  },
+  {
+    "timestamp": "2026-05-09T22:08:49.194113",
+    "ticker": "RELIANCE.NS",
+    "accuracy": 52.22,
+    "features_used": 15,
+    "train_count": 1
+  },
+  {
+    "timestamp": "2026-05-09T22:16:01.132729",
+    "ticker": "RELIANCE.NS",
+    "accuracy": 52.22,
+    "features_used": 15,
+    "train_count": 1
+  },
+  {
+    "timestamp": "2026-05-09T22:19:37.099070",
+    "ticker": "RELIANCE.NS",
+    "accuracy": 52.22,
+    "features_used": 15,
+    "train_count": 1
+  },
+  {
+    "timestamp": "2026-05-09T22:21:41.356602",
+    "ticker": "RELIANCE.NS",
+    "accuracy": 52.22,
+    "features_used": 15,
+    "train_count": 1
+  },
+  {
+    "timestamp": "2026-05-09T17:02:45.522436",
+    "ticker": "RELIANCE.NS",
+    "accuracy": 52.22,
+    "features_used": 15,
+    "train_count": 1
+  },
+  {
+    "timestamp": "2026-05-09T17:06:51.169481",
+    "ticker": "RELIANCE.NS",
+    "accuracy": 52.22,
+    "features_used": 15,
+    "train_count": 1
+  },
+  {
+    "timestamp": "2026-05-09T17:12:23.011646",
+    "ticker": "RELIANCE.NS",
+    "accuracy": 52.22,
+    "features_used": 15,
+    "train_count": 1
+  },
+  {
+    "timestamp": "2026-05-09T17:20:33.923745",
+    "ticker": "RELIANCE.NS",
+    "accuracy": 52.22,
+    "features_used": 15,
+    "train_count": 1
+  },
+  {
+    "timestamp": "2026-05-09T17:20:58.332983",
+    "ticker": "RELIANCE.NS",
+    "accuracy": 52.22,
+    "features_used": 15,
+    "train_count": 1
+  },
+  {
+    "timestamp": "2026-05-09T17:21:31.085771",
+    "ticker": "TCS.NS",
+    "accuracy": 45.56,
+    "features_used": 15,
+    "train_count": 1
+  },
+  {
+    "timestamp": "2026-05-09T17:25:51.575812",
+    "ticker": "RELIANCE.NS",
+    "accuracy": 52.22,
+    "features_used": 15,
+    "train_count": 1
+  },
+  {
+    "timestamp": "2026-05-09T17:31:46.418588",
+    "ticker": "RELIANCE.NS",
+    "accuracy": 52.22,
+    "features_used": 15,
+    "train_count": 1
+  },
+  {
+    "timestamp": "2026-05-09T17:38:48.302821",
+    "ticker": "RELIANCE.NS",
+    "accuracy": 52.22,
+    "features_used": 15,
+    "train_count": 1
+  },
+  {
+    "timestamp": "2026-05-09T17:39:00.400315",
+    "ticker": "RELIANCE.NS",
+    "accuracy": 52.22,
+    "features_used": 15,
+    "train_count": 1
+  },
+  {
+    "timestamp": "2026-05-09T17:45:55.369360",
+    "ticker": "RELIANCE.NS",
+    "accuracy": 52.22,
+    "features_used": 15,
+    "train_count": 1
+  },
+  {
+    "timestamp": "2026-05-09T17:49:50.066993",
+    "ticker": "RELIANCE.NS",
+    "accuracy": 52.22,
+    "features_used": 15,
+    "train_count": 1
+  },
+  {
+    "timestamp": "2026-05-09T17:50:02.356520",
+    "ticker": "RELIANCE.NS",
+    "accuracy": 52.22,
+    "features_used": 15,
+    "train_count": 1
+  },
+  {
+    "timestamp": "2026-05-09T17:55:31.630020",
+    "ticker": "RELIANCE.NS",
+    "accuracy": 52.1,
+    "features_used": 15,
+    "train_count": 1
+  },
+  {
+    "timestamp": "2026-05-09T17:55:46.145783",
+    "ticker": "RELIANCE.NS",
+    "accuracy": 52.1,
+    "features_used": 15,
+    "train_count": 1
+  },
+  {
+    "timestamp": "2026-05-09T18:00:17.313764",
+    "ticker": "RELIANCE.NS",
+    "accuracy": 52.1,
+    "features_used": 15,
+    "train_count": 1
+  },
+  {
+    "timestamp": "2026-05-09T18:07:57.358398",
+    "ticker": "RELIANCE.NS",
+    "accuracy": 52.1,
+    "features_used": 15,
+    "train_count": 1
+  },
+  {
+    "timestamp": "2026-05-09T18:08:13.059232",
+    "ticker": "RELIANCE.NS",
+    "accuracy": 52.1,
+    "features_used": 15,
+    "train_count": 1
+  },
+  {
+    "timestamp": "2026-05-09T18:12:31.402860",
+    "ticker": "RELIANCE.NS",
+    "accuracy": 52.1,
+    "features_used": 15,
+    "train_count": 1
+  },
+  {
+    "timestamp": "2026-05-09T18:16:57.090322",
+    "ticker": "RELIANCE.NS",
+    "accuracy": 52.1,
+    "features_used": 15,
+    "train_count": 1
+  },
+  {
+    "timestamp": "2026-05-09T18:17:10.189599",
+    "ticker": "RELIANCE.NS",
+    "accuracy": 52.1,
+    "features_used": 15,
+    "train_count": 1
+  },
+  {
+    "timestamp": "2026-05-09T18:22:59.358542",
+    "ticker": "RELIANCE.NS",
+    "accuracy": 52.1,
+    "features_used": 15,
+    "train_count": 1
+  },
+  {
+    "timestamp": "2026-05-09T18:23:29.143454",
+    "ticker": "TCS.NS",
+    "accuracy": 46.22,
+    "features_used": 15,
+    "train_count": 1
+  },
+  {
+    "timestamp": "2026-05-09T18:24:36.223455",
+    "ticker": "HDFCBANK.NS",
+    "accuracy": 49.16,
+    "features_used": 15,
+    "train_count": 1
+  },
+  {
+    "timestamp": "2026-05-09T18:25:09.208288",
+    "ticker": "INFY.NS",
+    "accuracy": 47.9,
+    "features_used": 15,
+    "train_count": 1
+  },
+  {
+    "timestamp": "2026-05-09T18:25:52.880057",
+    "ticker": "ICICIBANK.NS",
+    "accuracy": 56.72,
+    "features_used": 15,
+    "train_count": 1
+  },
+  {
+    "timestamp": "2026-05-09T18:26:28.797768",
+    "ticker": "HINDUNILVR.NS",
+    "accuracy": 53.36,
+    "features_used": 15,
+    "train_count": 1
+  },
+  {
+    "timestamp": "2026-05-09T18:31:41.610632",
+    "ticker": "RELIANCE.NS",
+    "accuracy": 52.1,
+    "features_used": 15,
+    "train_count": 1
+  },
+  {
+    "timestamp": "2026-05-09T18:32:42.638225",
+    "ticker": "RELIANCE.NS",
+    "accuracy": 52.1,
+    "features_used": 15,
+    "train_count": 1
+  },
+  {
+    "timestamp": "2026-05-09T18:33:32.968093",
+    "ticker": "TCS.NS",
+    "accuracy": 46.22,
+    "features_used": 15,
+    "train_count": 1
+  },
+  {
+    "timestamp": "2026-05-09T18:34:46.219867",
+    "ticker": "HDFCBANK.NS",
+    "accuracy": 48.74,
+    "features_used": 15,
+    "train_count": 1
+  },
+  {
+    "timestamp": "2026-05-09T18:35:24.776330",
+    "ticker": "INFY.NS",
+    "accuracy": 47.9,
+    "features_used": 15,
+    "train_count": 1
+  },
+  {
+    "timestamp": "2026-05-09T18:36:02.246811",
+    "ticker": "ICICIBANK.NS",
+    "accuracy": 57.56,
+    "features_used": 15,
+    "train_count": 1
+  },
+  {
+    "timestamp": "2026-05-09T18:36:32.485353",
+    "ticker": "HINDUNILVR.NS",
+    "accuracy": 53.36,
+    "features_used": 15,
+    "train_count": 1
+  },
+  {
+    "timestamp": "2026-05-09T18:37:44.656283",
+    "ticker": "SBIN.NS",
+    "accuracy": 52.52,
+    "features_used": 15,
+    "train_count": 1
+  },
+  {
+    "timestamp": "2026-05-09T18:38:22.510514",
+    "ticker": "BHARTIARTL.NS",
+    "accuracy": 56.3,
+    "features_used": 15,
+    "train_count": 1
+  },
+  {
+    "timestamp": "2026-05-09T18:39:00.545312",
+    "ticker": "KOTAKBANK.NS",
+    "accuracy": 54.62,
+    "features_used": 15,
+    "train_count": 1
+  },
+  {
+    "timestamp": "2026-05-09T18:43:06.034145",
+    "ticker": "RELIANCE.NS",
+    "accuracy": 52.1,
+    "features_used": 15,
+    "train_count": 1
+  },
+  {
+    "timestamp": "2026-05-09T18:43:27.242068",
+    "ticker": "RELIANCE.NS",
+    "accuracy": 52.1,
+    "features_used": 15,
+    "train_count": 1
+  },
+  {
+    "timestamp": "2026-05-09T18:44:49.258054",
+    "ticker": "RELIANCE.NS",
+    "accuracy": 52.1,
+    "features_used": 15,
+    "train_count": 1
+  },
+  {
+    "timestamp": "2026-05-09T18:45:18.025564",
+    "ticker": "TCS.NS",
+    "accuracy": 48.74,
+    "features_used": 15,
+    "train_count": 1
+  },
+  {
+    "timestamp": "2026-05-09T18:46:22.887920",
+    "ticker": "HDFCBANK.NS",
+    "accuracy": 49.16,
+    "features_used": 15,
+    "train_count": 1
+  },
+  {
+    "timestamp": "2026-05-09T18:46:53.689035",
+    "ticker": "INFY.NS",
+    "accuracy": 47.9,
+    "features_used": 15,
+    "train_count": 1
+  },
+  {
+    "timestamp": "2026-05-09T18:47:27.214949",
+    "ticker": "ICICIBANK.NS",
+    "accuracy": 57.56,
+    "features_used": 15,
+    "train_count": 1
+  },
+  {
+    "timestamp": "2026-05-09T18:48:03.100317",
+    "ticker": "HINDUNILVR.NS",
+    "accuracy": 53.36,
+    "features_used": 15,
+    "train_count": 1
+  },
+  {
+    "timestamp": "2026-05-09T18:49:42.435794",
+    "ticker": "SBIN.NS",
+    "accuracy": 53.36,
+    "features_used": 15,
+    "train_count": 1
+  },
+  {
+    "timestamp": "2026-05-09T18:50:23.861924",
+    "ticker": "BHARTIARTL.NS",
+    "accuracy": 56.3,
+    "features_used": 15,
+    "train_count": 1
+  },
+  {
+    "timestamp": "2026-05-09T18:51:03.827228",
+    "ticker": "KOTAKBANK.NS",
+    "accuracy": 54.62,
+    "features_used": 15,
+    "train_count": 1
+  },
+  {
+    "timestamp": "2026-05-09T18:51:44.745536",
+    "ticker": "ITC.NS",
+    "accuracy": 48.32,
+    "features_used": 15,
+    "train_count": 1
+  },
+  {
+    "timestamp": "2026-05-09T18:52:26.909035",
+    "ticker": "LT.NS",
+    "accuracy": 51.68,
+    "features_used": 15,
+    "train_count": 1
+  },
+  {
+    "timestamp": "2026-05-09T18:53:54.615279",
+    "ticker": "AXISBANK.NS",
+    "accuracy": 55.46,
+    "features_used": 15,
+    "train_count": 1
+  },
+  {
+    "timestamp": "2026-05-09T18:54:33.772405",
+    "ticker": "ASIANPAINT.NS",
+    "accuracy": 52.52,
+    "features_used": 15,
+    "train_count": 1
+  },
+  {
+    "timestamp": "2026-05-09T18:55:29.484536",
+    "ticker": "MARUTI.NS",
+    "accuracy": 49.16,
+    "features_used": 15,
+    "train_count": 1
+  },
+  {
+    "timestamp": "2026-05-09T18:56:55.816127",
+    "ticker": "HCLTECH.NS",
+    "accuracy": 48.74,
+    "features_used": 15,
+    "train_count": 1
+  },
+  {
+    "timestamp": "2026-05-09T18:57:36.463127",
+    "ticker": "SUNPHARMA.NS",
+    "accuracy": 57.98,
+    "features_used": 15,
+    "train_count": 1
+  },
+  {
+    "timestamp": "2026-05-09T18:58:10.512162",
+    "ticker": "TITAN.NS",
+    "accuracy": 59.24,
+    "features_used": 15,
+    "train_count": 1
+  },
+  {
+    "timestamp": "2026-05-09T18:59:34.971028",
+    "ticker": "BAJFINANCE.NS",
+    "accuracy": 57.14,
+    "features_used": 15,
+    "train_count": 1
+  },
+  {
+    "timestamp": "2026-05-09T19:00:15.151158",
+    "ticker": "WIPRO.NS",
+    "accuracy": 49.16,
+    "features_used": 15,
+    "train_count": 1
+  },
+  {
+    "timestamp": "2026-05-09T19:00:55.986496",
+    "ticker": "ULTRACEMCO.NS",
+    "accuracy": 52.1,
+    "features_used": 15,
+    "train_count": 1
+  },
+  {
+    "timestamp": "2026-05-09T19:02:15.570662",
+    "ticker": "NESTLEIND.NS",
+    "accuracy": 55.04,
+    "features_used": 15,
+    "train_count": 1
+  },
+  {
+    "timestamp": "2026-05-09T19:02:57.372062",
+    "ticker": "TATAMOTORS.NS",
+    "accuracy": 57.02,
+    "features_used": 15,
+    "train_count": 1
+  },
+  {
+    "timestamp": "2026-05-09T19:03:36.419851",
+    "ticker": "POWERGRID.NS",
+    "accuracy": 45.38,
+    "features_used": 15,
+    "train_count": 1
+  },
+  {
+    "timestamp": "2026-05-09T19:04:02.609887",
+    "ticker": "NTPC.NS",
+    "accuracy": 55.04,
+    "features_used": 15,
+    "train_count": 1
+  },
+  {
+    "timestamp": "2026-05-09T19:04:27.080099",
+    "ticker": "TECHM.NS",
+    "accuracy": 52.94,
+    "features_used": 15,
+    "train_count": 1
+  },
+  {
+    "timestamp": "2026-05-09T19:04:58.939947",
+    "ticker": "M&M.NS",
+    "accuracy": 63.87,
+    "features_used": 15,
+    "train_count": 1
+  },
+  {
+    "timestamp": "2026-05-09T19:06:03.376822",
+    "ticker": "TATASTEEL.NS",
+    "accuracy": 58.82,
+    "features_used": 15,
+    "train_count": 1
+  },
+  {
+    "timestamp": "2026-05-09T19:06:36.362002",
+    "ticker": "INDUSINDBK.NS",
+    "accuracy": 52.94,
+    "features_used": 15,
+    "train_count": 1
+  },
+  {
+    "timestamp": "2026-05-09T19:07:05.874122",
+    "ticker": "BAJAJFINSV.NS",
+    "accuracy": 55.04,
+    "features_used": 15,
+    "train_count": 1
+  },
+  {
+    "timestamp": "2026-05-09T19:07:36.137466",
+    "ticker": "ADANIENT.NS",
+    "accuracy": 54.2,
+    "features_used": 15,
+    "train_count": 1
+  },
+  {
+    "timestamp": "2026-05-10T03:33:48.015733",
+    "ticker": "RELIANCE.NS",
+    "accuracy": 52.1,
+    "features_used": 15,
+    "train_count": 1
+  },
+  {
+    "timestamp": "2026-05-10T03:34:16.970573",
+    "ticker": "TCS.NS",
+    "accuracy": 46.22,
+    "features_used": 15,
+    "train_count": 1
+  },
+  {
+    "timestamp": "2026-05-10T03:35:22.881459",
+    "ticker": "HDFCBANK.NS",
+    "accuracy": 49.16,
+    "features_used": 15,
+    "train_count": 1
+  },
+  {
+    "timestamp": "2026-05-10T03:35:54.345516",
+    "ticker": "INFY.NS",
+    "accuracy": 47.9,
+    "features_used": 15,
+    "train_count": 1
+  },
+  {
+    "timestamp": "2026-05-10T03:36:30.089594",
+    "ticker": "ICICIBANK.NS",
+    "accuracy": 56.72,
+    "features_used": 15,
+    "train_count": 1
+  },
+  {
+    "timestamp": "2026-05-10T03:36:56.418870",
+    "ticker": "HINDUNILVR.NS",
+    "accuracy": 53.36,
+    "features_used": 15,
+    "train_count": 1
+  },
+  {
+    "timestamp": "2026-05-10T03:37:54.795618",
+    "ticker": "SBIN.NS",
+    "accuracy": 52.52,
+    "features_used": 15,
+    "train_count": 1
+  },
+  {
+    "timestamp": "2026-05-10T03:38:20.396169",
+    "ticker": "BHARTIARTL.NS",
+    "accuracy": 56.3,
+    "features_used": 15,
+    "train_count": 1
+  },
+  {
+    "timestamp": "2026-05-10T03:38:48.853622",
+    "ticker": "KOTAKBANK.NS",
+    "accuracy": 54.62,
+    "features_used": 15,
+    "train_count": 1
+  },
+  {
+    "timestamp": "2026-05-10T03:39:18.635027",
+    "ticker": "ITC.NS",
+    "accuracy": 48.32,
+    "features_used": 15,
+    "train_count": 1
+  },
+  {
+    "timestamp": "2026-05-10T03:39:49.598449",
+    "ticker": "LT.NS",
+    "accuracy": 51.68,
+    "features_used": 15,
+    "train_count": 1
+  },
+  {
+    "timestamp": "2026-05-10T03:40:53.519849",
+    "ticker": "AXISBANK.NS",
+    "accuracy": 55.46,
+    "features_used": 15,
+    "train_count": 1
+  },
+  {
+    "timestamp": "2026-05-10T03:41:22.571482",
+    "ticker": "ASIANPAINT.NS",
+    "accuracy": 52.52,
+    "features_used": 15,
+    "train_count": 1
+  },
+  {
+    "timestamp": "2026-05-10T03:42:05.413462",
+    "ticker": "MARUTI.NS",
+    "accuracy": 47.48,
+    "features_used": 15,
+    "train_count": 1
+  },
+  {
+    "timestamp": "2026-05-10T03:43:10.373961",
+    "ticker": "HCLTECH.NS",
+    "accuracy": 47.48,
+    "features_used": 15,
+    "train_count": 1
+  },
+  {
+    "timestamp": "2026-05-10T03:43:40.804527",
+    "ticker": "SUNPHARMA.NS",
+    "accuracy": 57.98,
+    "features_used": 15,
+    "train_count": 1
+  },
+  {
+    "timestamp": "2026-05-10T03:44:06.644650",
+    "ticker": "TITAN.NS",
+    "accuracy": 59.24,
+    "features_used": 15,
+    "train_count": 1
+  },
+  {
+    "timestamp": "2026-05-10T03:45:11.068275",
+    "ticker": "BAJFINANCE.NS",
+    "accuracy": 57.14,
+    "features_used": 15,
+    "train_count": 1
+  },
+  {
+    "timestamp": "2026-05-10T03:45:40.981354",
+    "ticker": "WIPRO.NS",
+    "accuracy": 49.16,
+    "features_used": 15,
+    "train_count": 1
+  },
+  {
+    "timestamp": "2026-05-10T03:46:12.444358",
+    "ticker": "ULTRACEMCO.NS",
+    "accuracy": 51.68,
+    "features_used": 15,
+    "train_count": 1
+  },
+  {
+    "timestamp": "2026-05-10T03:47:18.661506",
+    "ticker": "NESTLEIND.NS",
+    "accuracy": 55.04,
+    "features_used": 15,
+    "train_count": 1
+  },
+  {
+    "timestamp": "2026-05-10T03:48:06.423239",
+    "ticker": "TATAMOTORS.NS",
+    "accuracy": 58.26,
+    "features_used": 15,
+    "train_count": 1
+  },
+  {
+    "timestamp": "2026-05-10T03:48:51.294403",
+    "ticker": "POWERGRID.NS",
+    "accuracy": 44.96,
+    "features_used": 15,
+    "train_count": 1
+  },
+  {
+    "timestamp": "2026-05-10T03:49:18.685591",
+    "ticker": "NTPC.NS",
+    "accuracy": 54.2,
+    "features_used": 15,
+    "train_count": 1
+  },
+  {
+    "timestamp": "2026-05-10T03:49:41.640327",
+    "ticker": "TECHM.NS",
+    "accuracy": 52.94,
+    "features_used": 15,
+    "train_count": 1
+  },
+  {
+    "timestamp": "2026-05-10T03:50:14.419796",
+    "ticker": "M&M.NS",
+    "accuracy": 63.87,
+    "features_used": 15,
+    "train_count": 1
+  },
+  {
+    "timestamp": "2026-05-10T03:51:25.111657",
+    "ticker": "TATASTEEL.NS",
+    "accuracy": 59.66,
+    "features_used": 15,
+    "train_count": 1
+  },
+  {
+    "timestamp": "2026-05-10T03:52:00.168796",
+    "ticker": "INDUSINDBK.NS",
+    "accuracy": 52.94,
+    "features_used": 15,
+    "train_count": 1
+  },
+  {
+    "timestamp": "2026-05-10T03:52:36.627392",
+    "ticker": "BAJAJFINSV.NS",
+    "accuracy": 55.04,
+    "features_used": 15,
+    "train_count": 1
+  },
+  {
+    "timestamp": "2026-05-10T03:57:13.887297",
+    "ticker": "RELIANCE.NS",
+    "accuracy": 52.1,
+    "features_used": 15,
+    "train_count": 1
+  },
+  {
+    "timestamp": "2026-05-10T04:08:47.001812",
+    "ticker": "RELIANCE.NS",
+    "accuracy": 52.1,
+    "features_used": 15,
+    "train_count": 1
+  },
+  {
+    "timestamp": "2026-05-10T04:27:33.096031",
+    "ticker": "RELIANCE.NS",
+    "accuracy": 52.1,
+    "features_used": 15,
+    "train_count": 1
+  },
+  {
+    "timestamp": "2026-05-10T04:38:23.689251",
+    "ticker": "RELIANCE.NS",
+    "accuracy": 52.1,
+    "features_used": 15,
+    "train_count": 1
+  }
+]
