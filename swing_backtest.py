@@ -15,17 +15,18 @@ import yfinance as yf
 import pandas as pd
 
 
-def backtest(ticker: str, initial_capital: float = 2000) -> dict:
-    """Run backtest on 1 year historical data"""
+def backtest(ticker: str, initial_capital: float = 2000, years: int = 2) -> dict:
+    """Run backtest on historical data"""
     
     print(f"\n{'='*50}")
-    print(f"   BACKTEST: {ticker}")
+    print(f"   BACKTEST: {ticker} ({years} years)")
     print(f"{'='*50}")
     
-    # Get 2 years of data (1 year for backtest + 1 year for indicators)
-    print("📥 Fetching 2 years of data...")
+    # Get data for specified years + 1 year for indicators
+    fetch_years = years + 1
+    print(f"📥 Fetching {fetch_years} years of data...")
     stock = yf.Ticker(ticker)
-    df = stock.history(period="2y", auto_adjust=True)
+    df = stock.history(period=f"{fetch_years}y", auto_adjust=True)
     
     if df is None or len(df) < 250:
         print("❌ Insufficient data")
@@ -44,8 +45,8 @@ def backtest(ticker: str, initial_capital: float = 2000) -> dict:
     losses = 0
     trades = []
     
-    # Start from 1 year ago (skip first year for indicator warmup)
-    start_idx = max(50, len(df) - 252)  # ~1 year of trading days
+    # Start from years ago (skip first year for indicator warmup)
+    start_idx = max(50, len(df) - (252 * years))  # ~252 trading days per year
     
     print(f"\n🔄 Running backtest from day {start_idx} to {len(df)}...")
     
@@ -234,6 +235,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('--ticker', default='SBIN.NS')
     parser.add_argument('--capital', type=float, default=2000)
+    parser.add_argument('--years', type=int, default=2)
     args = parser.parse_args()
     
-    backtest(args.ticker, args.capital)
+    backtest(args.ticker, args.capital, args.years)
