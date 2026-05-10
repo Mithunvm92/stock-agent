@@ -62,15 +62,15 @@ while True:
     print("[18] Zerodha Profile")
     print("[19] Open Container Shell")
     print("[20] Docker Cleanup")
-    print("[21] Swing Bot Signal (Single Stock)")
-    print("[22] Swing Bot Scan (Multi Stock)")
-    print("[23] Start Swing Bot Paper Trading")
-    print("[24] Start Swing Bot LIVE Trading")
-    print("[25] CSV - Show Available Data Files")
-    print("[26] CSV - Backtest with CSV Data")
-    print("[27] CSV - Download Instructions")
-    print("[28] CSV - Download Data")
-    print("[29] Price Scanner - Stocks Under ₹1000")
+    print("[24] Swing Bot Signal (Single Stock)")
+    print("[25] Swing Bot Scan (Multi Stock)")
+    print("[26] Swing Bot Paper Trading")
+    print("[27] Swing Bot LIVE Trading")
+    print("[28] CSV - Show Available Data Files")
+    print("[29] CSV - Backtest with CSV Data")
+    print("[30] CSV - Download Instructions")
+    print("[31] CSV - Download Data")
+    print("[32] Price Scanner - Stocks Under ₹1000")
     print("[0] Exit\n")
 
     choice = input("Select option: ").strip()
@@ -79,6 +79,15 @@ while True:
     # START CONTAINERS
     # =====================================
     if choice == "1":
+
+        run("docker-compose up -d")
+
+        pause()
+
+    # =====================================
+    # START CONTAINERS
+    # =====================================
+    elif choice == "1":
 
         run("docker-compose up -d")
 
@@ -439,212 +448,3 @@ while True:
 
     # =====================================
     # SWING BOT - SINGLE STOCK SIGNAL
-    # =====================================
-    elif choice == "24":
-
-        ticker = input("\nTicker (e.g. RELIANCE.NS): ").strip().upper()
-
-        if not ticker.endswith(".NS"):
-            ticker = ticker + ".NS"
-
-        run(f"python swing_bot.py --ticker {ticker} --mode paper")
-
-        pause()
-
-    # =====================================
-    # SWING BOT - MULTI STOCK SCAN
-    # =====================================
-    elif choice == "25":
-
-        print("\n📊 Running Swing Bot Multi-Stock Scan...\n")
-
-        from swing_bot import SwingBot
-        import sys
-
-        TICKERS = [
-            "RELIANCE.NS", "TCS.NS", "HDFCBANK.NS", "INFY.NS",
-            "ICICIBANK.NS", "KOTAKBANK.NS", "SBIN.NS", "BHARTIARTL.NS",
-            "HINDUNILVR.NS", "ITC.NS", "LT.NS", "SUNPHARMA.NS"
-        ]
-
-        buy_signals = []
-        sell_signals = []
-
-        for ticker in TICKERS:
-            try:
-                bot = SwingBot(ticker, mode='paper')
-                bot.fetch_data()
-                
-                if bot.df is None or len(bot.df) == 0:
-                    print(f"⚠️ {ticker}: No data")
-                    continue
-                    
-                signal, conf, reason = bot.generate_signal()
-
-                if signal == "BUY":
-                    buy_signals.append(f"{ticker.replace('.NS','')}: {conf:.0f}% - {reason}")
-                elif signal == "SELL":
-                    sell_signals.append(f"{ticker.replace('.NS','')}: {conf:.0f}% - {reason}")
-
-            except Exception as e:
-                print(f"❌ {ticker}: {e}")
-
-        print("\n" + "="*50)
-        print("   SWING BOT SCAN RESULTS")
-        print("="*50)
-
-        if buy_signals:
-            print("\n✅ BUY SIGNALS:")
-            for s in buy_signals:
-                print(f"   • {s}")
-
-        if sell_signals:
-            print("\n📉 SELL SIGNALS:")
-            for s in sell_signals:
-                print(f"   • {s}")
-
-        if not buy_signals and not sell_signals:
-            print("\n⏸ No signals - HOLD")
-
-        print("\n" + "="*50)
-
-        pause()
-
-    # =====================================
-    # SWING BOT - PAPER TRADING
-    # =====================================
-    elif choice == "26":
-
-        ticker = input("\nTicker (e.g. RELIANCE.NS): ").strip().upper()
-
-        if not ticker.endswith(".NS"):
-            ticker = ticker + ".NS"
-
-        print("\n📈 Starting Swing Bot Paper Trading...")
-
-        run(f"python swing_bot.py --ticker {ticker} --mode paper --interval 300")
-
-        pause()
-
-    # =====================================
-    # SWING BOT - LIVE TRADING
-    # =====================================
-    elif choice == "27":
-
-        print("\n⚠️ WARNING: LIVE MONEY MODE ⚠️")
-
-        confirm = input("Type YES to continue: ")
-
-        if confirm == "YES":
-
-            ticker = input("\nTicker (e.g. SBIN.NS): ").strip().upper()
-
-            if not ticker.endswith(".NS"):
-                ticker = ticker + ".NS"
-
-            run(f"python swing_bot.py --ticker {ticker} --mode live --interval 300")
-
-        else:
-
-            print("\n❌ Cancelled")
-
-            time.sleep(2)
-
-    # =====================================
-    # CSV OPTIONS (28, 29, 30)
-    # =====================================
-    elif choice == "28":
-
-        print("\n📁 Available CSV Data Files\n")
-
-        from csv_loader import list_available_csv
-
-        files = list_available_csv('data')
-
-        if files:
-            print("Available files in data/:")
-            for f in files:
-                print(f"   • {f}")
-        else:
-            print("No CSV files found in data/")
-            print("Use option 30 to download instructions")
-
-        pause()
-
-    elif choice == "29":
-
-        print("\n📊 CSV Backtest\n")
-
-        ticker = input("Ticker (e.g. SBIN): ").strip().upper()
-        capital_input = input("Capital (default 2000): ").strip()
-        capital = float(capital_input) if capital_input else 2000
-
-        ticker_ns = ticker + ".NS" if not ticker.endswith(".NS") else ticker
-
-        print(f"\nRunning backtest on {ticker}...")
-
-        run(f"python swing_backtest.py --ticker {ticker_ns} --csv --capital {capital}")
-
-        pause()
-
-    elif choice == "30":
-
-        print("\n📥 CSV Download Instructions\n")
-
-        ticker = input("Ticker (e.g. SBIN): ").strip().upper()
-
-        from csv_loader import download_instructions
-
-        print(download_instructions(ticker))
-
-        pause()
-
-    elif choice == "31":
-
-        print("\n📥 CSV Download (curl)\n")
-
-        ticker = input("Ticker (e.g. SBIN): ").strip().upper()
-        
-        ticker_ns = ticker + ".NS" if not ticker.endswith(".NS") else ticker
-
-        period = input("Period (max/5y/2y/1y/6mo/3mo) [default: max]: ").strip() or "max"
-
-        from csv_loader import download_csv
-
-        success = download_csv(ticker_ns, period, 'data')
-
-        if success:
-            print("\n✅ Download complete!")
-            print("Use option 29 to backtest")
-        else:
-            print("\n❌ Download failed")
-
-        pause()
-
-    elif choice == "32":
-
-        print("\n📊 Price Scanner - Stocks Under ₹1000\n")
-
-        run("python price_scanner.py")
-
-        print("\n✅ Scan complete! Saved to data/stocks_under_1000.txt")
-
-        pause()
-
-    # =====================================
-    # EXIT
-    # =====================================
-    elif choice == "0":
-
-        print("\n👋 Exiting...\n")
-
-        break
-
-    # =====================================
-    # INVALID OPTION
-    # =====================================
-    else:
-
-        print("\n❌ Invalid option")
-
-        time.sleep(1)
