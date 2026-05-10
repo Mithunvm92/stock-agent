@@ -139,7 +139,7 @@ Format: Date,Open,High,Low,Close,Volume
 
 
 def download_csv(ticker: str, period: str = "max", csv_dir: str = "data") -> bool:
-    """Download CSV data using yfinance
+    """Download CSV data using yfinance with retry logic
     
     Args:
         ticker: Stock ticker
@@ -156,29 +156,47 @@ def download_csv(ticker: str, period: str = "max", csv_dir: str = "data") -> boo
     
     print(f"📥 Downloading {ticker} data via yfinance...")
     
-    try:
-        import yfinance as yf
-        
-        stock = yf.Ticker(ticker)
-        df = stock.history(period=period, auto_adjust=True)
-        
-        if df is None or len(df) < 10:
-            print(f"❌ No data received")
-            return False
-        
-        # Reset index to have Date column
-        df = df.reset_index()
-        
-        # Save as CSV matching Yahoo format
-        df.to_csv(csv_path, index=False)
-        
-        size = os.path.getsize(csv_path)
-        print(f"✅ Saved to {csv_path} ({size/1024:.1f} KB, {len(df)} rows)")
-        return True
+    # Try periods in order of preference
+    period_options = [period, '1y', '6mo', '3mo', '1mo']
+    
+    for attempt_period in period_options:
+        try:
+            import yfinance as yf
+            import time
             
-    except Exception as e:
-        print(f"❌ Error: {e}")
-        return False
+            stock = yf.Ticker(ticker)
+            df = stock.history(period=attempt_period, auto_adjust=True)
+            
+            if df is None or len(df) < 10:
+                print(f"⚠️ Period {attempt_period}: No data")
+                continue
+            
+            # Reset index to have Date column
+            df = df.reset_index()
+            
+            # Save as CSV
+            df.to_csv(csv_path, index=False)
+            
+            size = os.path.getsize(csv_path)
+            print(f"✅ Saved to {csv_path} ({size/1024:.1f} KB, {len(df)} rows from {attempt_period})")
+            return True
+            
+        except Exception as e:
+            error_msg = str(e)
+            if 'Too Many Requests' in error_msg or '429' in error_msg:
+                print(f"⚠️ Rate limited, trying smaller period...")
+                time.sleep(2)
+                continue
+            else:
+                print(f"❌ Error: {e}")
+                return False
+    
+    # If all failed, offer instructions
+    print(f"\n❌ Rate limited on all periods")
+    print("📌 Options:")
+    print("   1. Wait 15 minutes and try again")
+    print("   2. Use option 30 for manual download")
+    return False
 
 
 if __name__ == "__main__":
