@@ -139,7 +139,7 @@ Format: Date,Open,High,Low,Close,Volume
 
 
 def download_csv(ticker: str, period: str = "max", csv_dir: str = "data") -> bool:
-    """Download CSV data using curl/API
+    """Download CSV data using requests
     
     Args:
         ticker: Stock ticker
@@ -158,9 +158,61 @@ def download_csv(ticker: str, period: str = "max", csv_dir: str = "data") -> boo
     print(f"📥 Downloading {ticker} data...")
     
     try:
+        import requests
+        headers = {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+        }
+        
+        response = requests.get(url, headers=headers, timeout=30)
+        
+        if response.status_code != 200:
+            print(f"❌ HTTP Error: {response.status_code}")
+            # Check if it's HTML (error page)
+            if 'text/html' in response.headers.get('Content-Type', ''):
+                print("❌ Yahoo blocked the request")
+                print("   Try: Option 30 for manual download instructions")
+            return False
+        
+        # Check content
+        if '<html>' in response.text[:100].lower():
+            print("❌ Yahoo returned error page")
+            return False
+        
+        # Save
+        with open(csv_path, 'w') as f:
+            f.write(response.text)
+        
+        size = len(response.text)
+        if size > 1000:
+            print(f"✅ Saved to {csv_path} ({size/1024:.1f} KB)")
+            return True
+        else:
+            print(f"❌ File too small: {size} bytes")
+            os.remove(csv_path)
+            return False
+            
+    except ImportError:
+        # Fallback to curl
+        return download_csv_curl(ticker, period, csv_dir)
+    except Exception as e:
+        print(f"❌ Error: {e}")
+        return False
+
+
+def download_csv_curl(ticker: str, period: str = "max", csv_dir: str = "data") -> bool:
+    """Fallback curl download"""
+    symbol = ticker.replace('.NS', '')
+    os.makedirs(csv_dir, exist_ok=True)
+    
+    url = f"https://query1.finance.yahoo.com/v7/finance/download/{symbol}.NS?periods={period}&interval=1d&filter=history"
+    csv_path = os.path.join(csv_dir, f"{symbol}.csv")
+    
+    print(f"📥 Downloading {ticker} data (curl fallback)...")
+    
+    try:
         import subprocess
         result = subprocess.run(
-            ['curl', '-s', '-o', csv_path, url],
+            ['curl', '-L', '-s', '-A', 'Mozilla/5.0', '-o', csv_path, url],
             capture_output=True,
             text=True,
             timeout=30
@@ -180,9 +232,7 @@ def download_csv(ticker: str, period: str = "max", csv_dir: str = "data") -> boo
                 print(f"❌ File too small: {size} bytes")
                 os.remove(csv_path)
                 return False
-        else:
-            print(f"❌ File not created")
-            return False
+        return False
             
     except Exception as e:
         print(f"❌ Error: {e}")
