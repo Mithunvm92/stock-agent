@@ -1,3 +1,7 @@
+from dotenv import load_dotenv
+
+load_dotenv()
+
 import sys
 
 from agents.trading_agent import TradingAgent

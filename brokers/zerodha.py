@@ -1,3 +1,6 @@
+from dotenv import load_dotenv
+load_dotenv()
+
 from kiteconnect import KiteConnect
 import os
 
