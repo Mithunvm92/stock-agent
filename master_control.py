@@ -1,11 +1,8 @@
 #!/usr/bin/env python3
+# swing_bot has built-in 7-indicator strategy - no external strategy imports needed
 
 import os
 import time
-
-from strategies.ichimoku_rsi_strategy import (
-    IchimokuRSIStrategy
-)
 
 
 # =====================================
@@ -65,18 +62,15 @@ while True:
     print("[18] Zerodha Profile")
     print("[19] Open Container Shell")
     print("[20] Docker Cleanup")
-    print("[21] Run Ichimoku Backtest")
-    print("[22] Optimize Ichimoku RSI")
-    print("[23] Run Ichimoku Paper Trading")
-    print("[24] Run Swing Bot Signal (Single Stock)")
-    print("[25] Swing Bot Scan (Multi Stock)")
-    print("[26] Start Swing Bot Paper Trading")
-    print("[27] Start Swing Bot LIVE Trading")
-    print("[28] CSV - Show Available Data Files")
-    print("[29] CSV - Backtest with CSV Data")
-    print("[30] CSV - Download Instructions")
-    print("[31] CSV - Download Data (curl)")
-    print("[32] Price Scanner - Stocks Under ₹1000")
+    print("[21] Swing Bot Signal (Single Stock)")
+    print("[22] Swing Bot Scan (Multi Stock)")
+    print("[23] Start Swing Bot Paper Trading")
+    print("[24] Start Swing Bot LIVE Trading")
+    print("[25] CSV - Show Available Data Files")
+    print("[26] CSV - Backtest with CSV Data")
+    print("[27] CSV - Download Instructions")
+    print("[28] CSV - Download Data")
+    print("[29] Price Scanner - Stocks < ₹1000")
     print("[0] Exit\n")
 
     choice = input("Select option: ").strip()
@@ -355,59 +349,6 @@ while True:
     # =====================================
     # ICHIMOKU BACKTEST
     # =====================================
-    elif choice == "21":
-
-        print(
-            "\n📊 Running Ichimoku Backtest...\n"
-        )
-
-        strategy = IchimokuRSIStrategy(
-
-            ticker="RELIANCE.NS",
-
-            initial_capital=100000,
-
-            rsi_threshold=40
-        )
-
-        strategy.load_data()
-
-        strategy.build_indicators()
-
-        strategy.generate_signals()
-
-        strategy.backtest()
-
-        strategy.performance_report()
-
-        strategy.plot_results()
-
-        pause()
-
-    # =====================================
-    # RSI OPTIMIZATION
-    # =====================================
-    elif choice == "22":
-
-        print(
-            "\n🔍 Optimizing RSI Threshold...\n"
-        )
-
-        strategy = IchimokuRSIStrategy(
-
-            ticker="RELIANCE.NS",
-
-            initial_capital=100000
-        )
-
-        strategy.optimize_rsi()
-
-        pause()
-
-    # =====================================
-    # ICHIMOKU PAPER TRADING
-    # =====================================
-    elif choice == "23":
 
         print(
             "\n📈 Starting Ichimoku "
