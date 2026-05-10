@@ -40,6 +40,30 @@ TICKERS = [
 
 FALLBACK_TICKERS = ["AAPL", "MSFT", "GOOGL"]
 
+# Small cap stocks under ₹1000 - good for small capital (₹2000)
+SMALL_CAP_TICKERS = [
+    "TATAMOTORS.NS",  # Tata Motors ~₹750
+    "UPL.NS",  # UPL ~₹500
+    "SBILIFE.NS",  # SBI Life ~₹800
+    "ICICIPRULI.NS",  # ICICI Pru Life ~₹400
+    "COFORGE.NS",  # Coforge ~₹4000
+    "LTI.NS",  # L&T Infotech ~₹3500
+    "MINDTREE.NS",  # MindTree ~₹900
+    "RAMCOCEM.NS",  # Ramco Cement ~₹700
+    "CASTROLIND.NS",  # Castrol India ~₹180
+    "BHEL.NS",  # BHEL ~₹120
+    "RBLBANK.NS",  # RBL Bank ~₹250
+    "FEDERALBNK.NS",  # Federal Bank ~₹150
+    "BANDHANBNK.NS",  # Bandhan Bank ~₹350
+    "IDFCFIRSTB.NS",  # IDFC First ~₹70
+    "AUBANK.NS",  # AU Bank ~₹600
+    "PNB.NS",  # PNB ~₹100
+    "UNIONBANK.NS",  # Union Bank ~₹80
+    "CANBK.NS",  # Canara Bank ~₹350
+    "BPCL.NS",  # BPCL ~₹300
+    "IOC.NS",  # IOC ~₹120
+]
+
 PRIMARY_TICKER = os.getenv("TICKER", "RELIANCE.NS")
 
 # ============================================
