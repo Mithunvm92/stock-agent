@@ -528,15 +528,20 @@ while True:
             try:
                 bot = SwingBot(ticker, mode='paper')
                 bot.fetch_data()
+                
+                if bot.df is None or len(bot.df) == 0:
+                    print(f"⚠️ {ticker}: No data")
+                    continue
+                    
                 signal, conf, reason = bot.generate_signal()
 
                 if signal == "BUY":
-                    buy_signals.append(f"{ticker}: {conf:.0f}% - {reason}")
+                    buy_signals.append(f"{ticker.replace('.NS','')}: {conf:.0f}% - {reason}")
                 elif signal == "SELL":
-                    sell_signals.append(f"{ticker}: {conf:.0f}% - {reason}")
+                    sell_signals.append(f"{ticker.replace('.NS','')}: {conf:.0f}% - {reason}")
 
             except Exception as e:
-                print(f"⚠️ {ticker}: {e}")
+                print(f"❌ {ticker}: {e}")
 
         print("\n" + "="*50)
         print("   SWING BOT SCAN RESULTS")
