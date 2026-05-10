@@ -74,43 +74,85 @@ class SwingBot:
     # ===================
     # DATA FETCHING
     # ===================
-    def fetch_data(self, period: str = "1y") -> pd.DataFrame:
+    def fetch_data(self, period: str = "1y", force: bool = False) -> pd.DataFrame:
         """Fetch OHLCV data with caching"""
-        # Check cache
+        # Check cache first (always use cache if available)
         safe_ticker = self.ticker.replace(".", "_")
         cache_file = f"db/swing_cache_{safe_ticker}.csv"
         
-        if os.path.exists(cache_file):
+        if not force and os.path.exists(cache_file):
             try:
                 cached = pd.read_csv(cache_file, index_col=0, parse_dates=True)
-                if len(cached) > 0:
+                if len(cached) > 100:
+                    # Cache valid for 1 day (reduced API calls)
                     age = (datetime.now() - cached.index[-1]).days
-                    if age < 1:
-                        print(f"📂 Using cached data ({len(cached)} rows)")
-                        self.df = cached
-                        return cached
+                    print(f"📂 Using cached data ({len(cached)} rows, {age}d old)")
+                    self.df = cached
+                    return cached
             except:
                 pass
         
-        # Fetch fresh data
+        # Check rate limit file
+        rate_file = "db/.rate_limit"
+        if os.path.exists(rate_file):
+            with open(rate_file, 'r') as f:
+                limit_time = datetime.fromisoformat(f.read())
+                if datetime.now() < limit_time:
+                    remaining = (limit_time - datetime.now()).seconds
+                    print(f"⏳ Rate limited. Wait {remaining}s...")
+                    # Try to use old cache instead
+                    if os.path.exists(cache_file):
+                        try:
+                            cached = pd.read_csv(cache_file, index_col=0, parse_dates=True)
+                            if len(cached) > 100:
+                                print("📂 Using stale cache due to rate limit")
+                                self.df = cached
+                                return cached
+                        except:
+                            pass
+                    return pd.DataFrame()
+        
+        # Fetch fresh data with retry
         print(f"📥 Fetching {self.ticker}...")
         
-        try:
-            stock = yf.Ticker(self.ticker)
-            df = stock.history(period=period, auto_adjust=True)
-            
-            if df is not None and len(df) > 100:
-                # Save cache
-                os.makedirs("db", exist_ok=True)
-                df.to_csv(cache_file)
-                print(f"✅ Loaded {len(df)} rows")
-                self.df = df
-                return df
-            else:
-                print(f"⚠️ No data returned")
-        except Exception as e:
-            print(f"❌ Fetch error: {e}")
+        for attempt in range(3):
+            try:
+                stock = yf.Ticker(self.ticker)
+                df = stock.history(period=period, auto_adjust=True)
+                
+                if df is not None and len(df) > 100:
+                    # Save cache
+                    os.makedirs("db", exist_ok=True)
+                    df.to_csv(cache_file)
+                    print(f"✅ Loaded {len(df)} rows")
+                    self.df = df
+                    return df
+                    
+            except Exception as e:
+                if "Too Many Requests" in str(e) or "rate limited" in str(e):
+                    # Set rate limit for 15 minutes
+                    os.makedirs("db", exist_ok=True)
+                    with open(rate_file, 'w') as f:
+                        f.write((datetime.now() + timedelta(minutes=15)).isoformat())
+                    print(f"⚠️ Rate limited! Using cache. Try after 15 min.")
+                    # Try local cache
+                    if os.path.exists(cache_file):
+                        try:
+                            cached = pd.read_csv(cache_file, index_col=0, parse_dates=True)
+                            if len(cached) > 50:
+                                print("📂 Using fallback cache")
+                                self.df = cached
+                                return cached
+                        except:
+                            pass
+                    return pd.DataFrame()
+                    
+                if attempt < 2:
+                    wait = (attempt + 1) * 5
+                    print(f"⚠️ Attempt {attempt+1} failed, retrying in {wait}s...")
+                    time.sleep(wait)
         
+        print(f"❌ Fetch failed for {self.ticker}")
         return pd.DataFrame()
     
     # ===================
