@@ -188,6 +188,8 @@ def download_csv(ticker: str, period: str = "max", csv_dir: str = "data") -> boo
     try:
         from nsepy import get_history
         from datetime import datetime, timedelta
+        import warnings
+        warnings.filterwarnings('ignore')
         
         # Calculate date range
         if period == 'max':
@@ -213,7 +215,8 @@ def download_csv(ticker: str, period: str = "max", csv_dir: str = "data") -> boo
         # NSEpy uses symbol without .NS
         nse_symbol = symbol.upper()
         
-        df = get_history(symbol=nse_symbol, start=start_date, end=end_date)
+        # Disable threading in nsepy
+        df = get_history(symbol=nse_symbol, start=start_date, end=end_date, threads=False)
         
         if df is None or len(df) < 10:
             print(f"⚠️ NSEpy failed for {nse_symbol}")
