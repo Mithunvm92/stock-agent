@@ -75,6 +75,7 @@ while True:
     print("[28] CSV - Show Available Data Files")
     print("[29] CSV - Backtest with CSV Data")
     print("[30] CSV - Download Instructions")
+    print("[31] CSV - Download Data (curl)")
     print("[0] Exit\n")
 
     choice = input("Select option: ").strip()
@@ -653,6 +654,28 @@ while True:
         from csv_loader import download_instructions
 
         print(download_instructions(ticker))
+
+        pause()
+
+    elif choice == "31":
+
+        print("\n📥 CSV Download (curl)\n")
+
+        ticker = input("Ticker (e.g. SBIN): ").strip().upper()
+        
+        ticker_ns = ticker + ".NS" if not ticker.endswith(".NS") else ticker
+
+        period = input("Period (max/5y/2y/1y/6mo/3mo) [default: max]: ").strip() or "max"
+
+        from csv_loader import download_csv
+
+        success = download_csv(ticker_ns, period, 'data')
+
+        if success:
+            print("\n✅ Download complete!")
+            print("Use option 29 to backtest")
+        else:
+            print("\n❌ Download failed")
 
         pause()
 

@@ -122,20 +122,71 @@ def download_instructions(ticker: str) -> str:
     instructions = f"""
 📥 CSV Download Instructions for {symbol}:
     
+Manual Download:
 1. Go to: https://finance.yahoo.com/quote/{symbol}.NS/history
 2. Select "Historical Data" tab
 3. Set Time Period: "Max" or desired range
 4. Set Frequency: "Daily"
 5. Click "Apply" then "Download"
 
-Or use this URL directly:
-https://query1.finance.yahoo.com/v7/finance/download/{symbol}.NS?periods=max&interval=1d&filter=history
+Or use curl (one-time download):
+curl -o data/{symbol}.csv "https://query1.finance.yahoo.com/v7/finance/download/{symbol}.NS?periods=max&interval=1d&filter=history"
 
-6. Save the file as: data/{symbol}.csv
-
-Note: The CSV must have columns: Date, Open, High, Low, Close, Volume
+Save the file as: data/{symbol}.csv
+Format: Date,Open,High,Low,Close,Volume
 """
     return instructions
+
+
+def download_csv(ticker: str, period: str = "max", csv_dir: str = "data") -> bool:
+    """Download CSV data using curl/API
+    
+    Args:
+        ticker: Stock ticker
+        period: Data period (max, 5y, 2y, 1y, 6mo, 3mo, 1mo)
+        csv_dir: Directory to save CSV
+    
+    Returns:
+        True if successful
+    """
+    symbol = ticker.replace('.NS', '')
+    os.makedirs(csv_dir, exist_ok=True)
+    
+    url = f"https://query1.finance.yahoo.com/v7/finance/download/{symbol}.NS?periods={period}&interval=1d&filter=history"
+    csv_path = os.path.join(csv_dir, f"{symbol}.csv")
+    
+    print(f"📥 Downloading {ticker} data...")
+    
+    try:
+        import subprocess
+        result = subprocess.run(
+            ['curl', '-s', '-o', csv_path, url],
+            capture_output=True,
+            text=True,
+            timeout=30
+        )
+        
+        if result.returncode != 0:
+            print(f"❌ Download failed: {result.stderr}")
+            return False
+        
+        # Verify file
+        if os.path.exists(csv_path):
+            size = os.path.getsize(csv_path)
+            if size > 1000:
+                print(f"✅ Saved to {csv_path} ({size/1024:.1f} KB)")
+                return True
+            else:
+                print(f"❌ File too small: {size} bytes")
+                os.remove(csv_path)
+                return False
+        else:
+            print(f"❌ File not created")
+            return False
+            
+    except Exception as e:
+        print(f"❌ Error: {e}")
+        return False
 
 
 if __name__ == "__main__":
@@ -144,7 +195,17 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="CSV Data Loader")
     parser.add_argument('--ticker', default='SBIN.NS')
     parser.add_argument('--csv-dir', default='data')
+    parser.add_argument('--download', action='store_true', help='Download CSV from Yahoo')
+    parser.add_argument('--period', default='max', help='Period: max, 5y, 2y, 1y, 6mo, 3mo')
     args = parser.parse_args()
+    
+    # Download if requested
+    if args.download:
+        success = download_csv(args.ticker, args.period, args.csv_dir)
+        if not success:
+            exit(1)
+        # Show summary
+        args.ticker = args.ticker  # Keep same for load
     
     # List available
     files = list_available_csv(args.csv_dir)
