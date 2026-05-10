@@ -6,17 +6,13 @@ class ZerodhaBroker:
 
     def __init__(self):
 
-        self.api_key = os.getenv(
-            "yy5no3jj0ynnc49f"
-        )
+        self.api_key = os.getenv("ZERODHA_API_KEY", "")
+        self.access_token = os.getenv("ZERODHA_ACCESS_TOKEN", "")
 
-        self.access_token = os.getenv(
-            "ZERODHA_ACCESS_TOKEN"
-        )
+        if not self.api_key:
+            raise ValueError("ZERODHA_API_KEY not set in .env")
 
-        self.kite = KiteConnect(
-            api_key=self.api_key
-        )
+        self.kite = KiteConnect(api_key=self.api_key)
 
         self.kite.set_access_token(
             self.access_token
