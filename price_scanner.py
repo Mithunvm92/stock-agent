@@ -1,16 +1,21 @@
 #!/usr/bin/env python3
 """
 Price Scanner - Find stocks under 1000 INR
+Rate-limited with caching
 """
 
 import yfinance as yf
-import pandas as pd
-from datetime import datetime
+import time
+import os
+import json
+from datetime import datetime, timedelta
 
 
-# Common NSE large/mid cap stocks
+CACHE_FILE = "/tmp/price_cache.json"
+CACHE_TTL_HOURS = 1
+
+
 NSE_STOCKS = [
-    # Large Cap
     'RELIANCE', 'TCS', 'HDFCBANK', 'INFY', 'SBIN', 'BHARTIARTL',
     'ITC', 'LT', 'HINDUNILVR', 'AXISBANK', 'KOTAKBANK', 'SUNPHARMA',
     'TATASTEEL', 'ADANIPORTS', 'M&M', 'BAJFINANCE', 'WIPRO', 'HCLTECH',
@@ -18,87 +23,84 @@ NSE_STOCKS = [
     'CIPLA', 'DRREDDY', 'SBILIFE', 'GRASIM', 'TATAMOTORS', 'NTPC',
     'COALINDIA', 'ADANIGREEN', 'ADANITRANS', 'SIEMENS', 'BPCL', 'TECHM',
     'HDFCLIFE', 'SHREECEM', 'DIVISLAB', 'POLYCAB', 'HAVELLS', 'GAIL',
-    'CONCOR', 'EXIDEIND', 'AMBUJACEM', 'GODREJPRO', 'UBL', 'COLGATE',
-    # Mid Cap
-    'APOLLOTYRE', 'CREATED', 'TORNTPHARM', 'GLENMARK', 'APOLLOHOSP', 'RAYMOND',
-    'BANDHANBNK', 'INDUSINDBK', 'IDICIBANK', 'FEDERALBANK', 'RBLBANK', 'AUBANK',
-    'PNB', 'CANBK', 'BANKBARODA', 'IOB', 'CORPBANK', 'KARURVYSYA',
-    'LALPATHLABS', 'METROBRAND', 'VGUARD', 'FINOLEXIND', 'REDINGTON', 'VIPIND',
-    'TATAELXSI', 'TEAMLEASE', 'SPANDANA', 'MAGMA', 'BIRLACORP', 'GSFC',
 ]
 
 
+def load_cache():
+    """Load cached prices"""
+    if os.path.exists(CACHE_FILE):
+        try:
+            with open(CACHE_FILE, 'r') as f:
+                data = json.load(f)
+            cache_time = datetime.fromisoformat(data.get('timestamp', '2000-01-01'))
+            if datetime.now() - cache_time < timedelta(hours=CACHE_TTL_HOURS):
+                return data.get('prices', {})
+        except:
+            pass
+    return {}
+
+
+def save_cache(prices):
+    """Save cache"""
+    try:
+        with open(CACHE_FILE, 'w') as f:
+            json.dump({'timestamp': datetime.now().isoformat(), 'prices': prices}, f)
+    except:
+        pass
+
+
 def get_prices():
-    """Get current prices for all stocks"""
+    """Get all stock prices"""
     print("📊 Checking prices...")
+    
+    # Try cache
+    cached = load_cache()
+    if cached:
+        print(f"💾 Using cache ({len(cached)} stocks)")
+        return [{'symbol': k, 'price': v} for k, v in cached.items()]
     
     prices = []
     
     for symbol in NSE_STOCKS:
         try:
-            ticker = f"{symbol}.NS"
-            stock = yf.Ticker(ticker)
-            info = stock.fast_info
+            ticker = yf.Ticker(f"{symbol}.NS")
+            time.sleep(0.3)  # Rate limit
             
-            # Try different price sources
-            price = 0
-            if 'lastPrice' in info:
-                price = info['lastPrice']
-            elif 'previousClose' in info:
-                price = info['previousClose']
-            elif 'close' in info:
-                price = info['close']
+            info = ticker.fast_info
+            price = info.get('lastPrice') or info.get('previousClose') or 0
             
             if price > 0:
-                prices.append({
-                    'symbol': symbol,
-                    'price': price,
-                    'ticker': ticker
-                })
+                prices.append({'symbol': symbol, 'price': price})
                 print(f"  {symbol}: ₹{price:.2f}")
-            
+            else:
+                print(f"  {symbol}: No data")
+                
         except Exception as e:
-            print(f"  {symbol}: Error - {e}")
+            print(f"  {symbol}: Error")
+    
+    # Save to cache
+    if prices:
+        save_cache({p['symbol']: p['price'] for p in prices})
     
     return prices
 
 
-def filter_under_1000(prices):
-    """Filter stocks under 1000 INR"""
-    under_1000 = [p for p in prices if p['price'] < 1000]
-    return sorted(under_1000, key=lambda x: x['price'])
-
-
 def main():
-    print("="*50)
-    print("NSE Stock Price Scanner")
-    print("="*50)
-    
     prices = get_prices()
+    under_1000 = [p for p in prices if p['price'] < 1000]
+    under_1000.sort(key=lambda x: x['price'])
     
-    print(f"\n{'='*50}")
-    print(f"STOCKS UNDER ₹1000")
-    print(f"{'='*50}")
+    print("\n" + "="*50)
+    print("   STOCKS UNDER ₹1000")
+    print("="*50)
     
-    under_1000 = filter_under_1000(prices)
+    if under_1000:
+        for p in under_1000[:15]:
+            print(f"  {p['symbol']:12} ₹{p['price']:.2f}")
+    else:
+        print("  No stocks found under ₹1000")
     
-    print(f"\nTotal: {len(under_1000)} stocks\n")
-    
-    for p in under_1000:
-        print(f"  {p['symbol']:15} ₹{p['price']:8.2f}")
-    
-    # Save list
-    print(f"\n{'='*50}")
-    
-    # Save to file for CSV download
-    with open('data/stocks_under_1000.txt', 'w') as f:
-        f.write("symbol,ticker,price\n")
-        for p in under_1000:
-            f.write(f"{p['symbol']},{p['ticker']},{p['price']}\n")
-    
-    print(f"✅ Saved to data/stocks_under_1000.txt")
-    print(f"\n📥 To download CSV for each:")
-    print(f"   python csv_loader.py --ticker SYMBOL --download")
+    print("="*50)
 
 
 if __name__ == "__main__":
