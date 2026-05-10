@@ -15,7 +15,7 @@ import yfinance as yf
 import pandas as pd
 
 
-def backtest(ticker: str, initial_capital: float = 2000, years: int = 1, period: str = None) -> dict:
+def backtest(ticker: str, initial_capital: float = 2000, years: int = 1, period: str = None, df=None) -> dict:
     """Run backtest on historical data
     
     Args:
@@ -23,12 +23,13 @@ def backtest(ticker: str, initial_capital: float = 2000, years: int = 1, period:
         initial_capital: Starting capital
         years: Number of years (used if period not specified)
         period: Custom period (1mo, 3mo, 6mo, 1y, 2y, 5y, max)
+        df: Optional pre-loaded DataFrame (skip fetching if provided)
     """
     
     # Use period or calculate from years
     if period:
         fetch_period = period
-        backtest_years = 1  # Use 1 year of available data for backtest
+        backtest_years = 1
     else:
         fetch_period = f"{years}y"
         backtest_years = years
@@ -37,10 +38,13 @@ def backtest(ticker: str, initial_capital: float = 2000, years: int = 1, period:
     print(f"   BACKTEST: {ticker} ({fetch_period})")
     print(f"{'='*50}")
     
-    # Get data for specified period
-    print(f"📥 Fetching {fetch_period} of data...")
-    stock = yf.Ticker(ticker)
-    df = stock.history(period=fetch_period, auto_adjust=True)
+    # Get data - use provided df or fetch new
+    if df is not None:
+        print(f"📥 Using provided data...")
+    else:
+        print(f"📥 Fetching {fetch_period} of data...")
+        stock = yf.Ticker(ticker)
+        df = stock.history(period=fetch_period, auto_adjust=True)
     
     if df is None or len(df) < 20:
         print("❌ Insufficient data")
@@ -265,11 +269,10 @@ if __name__ == "__main__":
             print("❌ No CSV data found. Download from Yahoo first.")
             exit(1)
         print(f"✅ Loaded {len(df)} rows from CSV")
-        # Run backtest with CSV data
-        from swing_bot import SwingBot
-        bot = SwingBot(args.ticker, initial_capital=args.capital, mode='paper')
-        bot.df = df
-        # ... copy the backtest logic or call a function
+        
+        # Run backtest with loaded df
+        backtest(args.ticker, args.capital, df=df)
+        
     elif args.period:
         backtest(args.ticker, args.capital, period=args.period)
     else:
