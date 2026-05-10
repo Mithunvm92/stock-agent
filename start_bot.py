@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
-"""One-click live trading bot - auto auth + trade 24/7."""
+"""Live trading bot - uses existing access token."""
 import os
 import sys
 import time
 import signal
+from dotenv import load_dotenv
+load_dotenv()
 
-# ==== CONFIG ====
 STOCKS = ["RELIANCE.NS", "TCS.NS", "HDFCBANK.NS", "SBIN.NS", "KOTAKBANK.NS"]
-INTERVAL = 300  # 5 minutes
 
 def get_rsi(ticker):
     try:
@@ -25,38 +25,28 @@ def get_rsi(ticker):
     except:
         return 50.0
 
-def auto_auth():
-    """Auto authenticate with Zerodha."""
+def get_kite():
+    """Get kite connection."""
     from kiteconnect import KiteConnect
-    api_key = os.getenv("ZERODHA_API_KEY")
-    api_secret = os.getenv("ZERODHA_API_SECRET")
-    request_token = os.getenv("ZERODHA_ACCESS_TOKEN")
+    api_key = os.getenv("ZERODHA_API_KEY", "")
+    access_token = os.getenv("ZERODHA_ACCESS_TOKEN", "")
     
-    if not all([api_key, api_secret, request_token]):
-        print("❌ Missing credentials. Set in .env:")
-        print("   ZERODHA_API_KEY")
-        print("   ZERODHA_API_SECRET")
-        print("   ZERODHA_ACCESS_TOKEN")
+    if not api_key or not access_token:
+        print("❌ Missing API_KEY or ACCESS_TOKEN in .env")
         return None
     
     kite = KiteConnect(api_key=api_key)
-    try:
-        data = kite.generate_session(request_token, api_secret=api_secret)
-        access_token = data["access_token"]
-        kite.set_access_token(access_token)
-        print(f"✅ Auto-authenticated!")
-        return kite
-    except Exception as e:
-        print(f"❌ Auth failed: {e}")
-        return None
+    kite.set_access_token(access_token)
+    return kite
 
 def place_trade(kite, ticker, action, qty=1):
     """Place order."""
     try:
+        sym = ticker.replace(".NS", "")
         result = kite.place_order(
             variety="regular",
             exchange="NSE",
-            trading_symbol=ticker.replace(".NS", ""),
+            trading_symbol=sym,
             transaction_type=action.upper(),
             quantity=qty,
             order_type="MARKET",
@@ -65,12 +55,12 @@ def place_trade(kite, ticker, action, qty=1):
         print(f"   ✅ {action} {qty} {ticker}: {result}")
         return result
     except Exception as e:
-        print(f"   ❌ Trade failed: {e}")
+        print(f"   ❌ {e}")
         return None
 
 def scan_and_trade(kite):
-    """Scan and trade."""
     print(f"\n{'='*50}")
+    print(time.strftime('%Y-%m-%d %H:%M:%S'))
     for ticker in STOCKS:
         rsi = get_rsi(ticker)
         if rsi < 30:
@@ -82,36 +72,32 @@ def scan_and_trade(kite):
         else:
             print(f"⚪ {ticker} RSI:{rsi:.0f} HOLD")
 
-def signal_handler(sig, frame):
-    print("\n🛑 Bot stopped")
-    sys.exit(0)
-
 def main():
     print("🤖 Starting Live Trading Bot...")
-    print("="*50)
-    
-    # Authenticate
-    kite = auto_auth()
+    kite = get_kite()
     if not kite:
-        print("\nGet request_token:")
-        print("1. Set ZERODHA_API_KEY and ZERODHA_API_SECRET in .env")
-        print("2. Visit: https://kite.zerodha.com/connect?api_key=YOUR_KEY")
-        print("3. Copy request_token from URL and add to .env")
-        print("4. Run again")
         sys.exit(1)
     
-    signal.signal(signal.SIGINT, signal_handler)
+    # Test connection
+    try:
+        profile = kite.profile()
+        print(f"✅ Logged in as: {profile.get('user_name', 'User')}")
+    except Exception as e:
+        print(f"❌ Connection failed: {e}")
+        print("Get new access token:")
+        print("1. python brokers/auto_auth.py --url")
+        print("2. Visit URL, login, get request_token")
+        print("3. python brokers/auto_auth.py <request_token>")
+        sys.exit(1)
     
-    # Initial scan
-    scan_and_trade(kite)
-    
-    # Loop forever
     print("\n🔄 Running 24/7 (Ctrl+C to stop)")
+    scan_and_trade(kite)
     while True:
-        time.sleep(INTERVAL)
+        time.sleep(300)
         scan_and_trade(kite)
 
 if __name__ == "__main__":
-    from dotenv import load_dotenv
-    load_dotenv()
-    main()
+    try:
+        main()
+    except KeyboardInterrupt:
+        print("\n🛑 Stopped")
