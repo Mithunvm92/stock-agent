@@ -15,6 +15,14 @@ import pandas as pd
 import numpy as np
 import yfinance as yf
 
+# Prometheus metrics (optional)
+try:
+    from prometheus_client import Gauge, Counter, push_to_gateway
+    PROMETHEUS_ENABLED = True
+except ImportError:
+    PROMETHEUS_ENABLED = False
+
+
 # Import CSV loader
 from csv_loader import load_csv, list_available_csv
 
@@ -74,6 +82,10 @@ class SwingBot:
         self.trade_history = []
         self.wins = 0
         self.losses = 0
+        
+        # Metrics tracking
+        self._metrics_enabled = PROMETHEUS_ENABLED
+        self._pushgateway = os.getenv('PUSHGATEWAY', 'localhost:9091')
         
         # Data cache
         self.df = None
@@ -604,7 +616,46 @@ class SwingBot:
         print(f"   P&L:         ₹{s['pnl']:+,.0f}")
         print(f"   Position:    {'OPEN' if s['position'] else 'NONE'}")
         print(f"   Win Rate:    {s['win_rate']:.0f}% ({s['wins']}W/{s['losses']}L)")
-        print(f"{'='*40}\n")
+        print(f"{'='*40}")
+        
+        # Push to Prometheus
+        self.push_metrics()
+    
+    def push_metrics(self):
+        """Push metrics to Prometheus PushGateway"""
+        if not self._metrics_enabled:
+            return
+        
+        try:
+            from prometheus_client import Gauge
+            
+            # Create/update metrics
+            pnl_gauge = Gauge('trading_pnl', 'Profit/Loss', ['ticker', 'mode'])
+            capital_gauge = Gauge('trading_capital', 'Capital', ['ticker', 'mode'])
+            wins_gauge = Gauge('trading_wins', 'Wins', ['ticker', 'mode'])
+            losses_gauge = Gauge('trading_losses', 'Losses', ['ticker', 'mode'])
+            position_gauge = Gauge('trading_position', 'Position Open', ['ticker', 'mode'])
+            signal_gauge = Gauge('trading_signal', 'Signal', ['ticker', 'mode'])
+            
+            pnl_gauge.labels(ticker=self.ticker, mode=self.mode).set(self.get_status()['pnl'])
+            capital_gauge.labels(ticker=self.ticker, mode=self.mode).set(self.current_capital)
+            wins_gauge.labels(ticker=self.ticker, mode=self.mode).set(self.wins)
+            losses_gauge.labels(ticker=self.ticker, mode=self.mode).set(self.losses)
+            position_gauge.labels(ticker=self.ticker, mode=self.mode).set(1 if self.position else 0)
+            
+            # Signal
+            signal_val = 0
+            if self.signal:
+                signal_val = {'BUY': 1, 'SELL': -1}.get(self.signal, 0)
+            signal_gauge.labels(ticker=self.ticker, mode=self.mode).set(signal_val)
+            
+            # Push to gateway
+            push_to_gateway(self._pushgateway, job=f'trading_{self.ticker}')
+            
+            print("\n📊 Metrics pushed to Prometheus")
+            
+        except Exception as e:
+            print(f"⚠️ Metrics error: {e}")
     
     # ===================
     # RUN LOOP
