@@ -15,6 +15,9 @@ import pandas as pd
 import numpy as np
 import yfinance as yf
 
+# Import CSV loader
+from csv_loader import load_csv, list_available_csv
+
 # Suppress warnings
 warnings.filterwarnings('ignore')
 
@@ -84,8 +87,24 @@ class SwingBot:
     # ===================
     # DATA FETCHING
     # ===================
-    def fetch_data(self, period: str = "1y", force: bool = False) -> pd.DataFrame:
-        """Fetch OHLCV data with caching"""
+    def fetch_data(self, period: str = "1y", force: bool = False, use_csv: bool = False, csv_dir: str = "data") -> pd.DataFrame:
+        """Fetch OHLCV data with caching and CSV support
+        
+        Args:
+            period: Data period for Yahoo (1y, 2y, etc.)
+            force: Force fresh download
+            use_csv: Use CSV file instead of Yahoo
+            csv_dir: Directory containing CSV files
+        """
+        # Try CSV first if requested
+        if use_csv:
+            df = load_csv(self.ticker, csv_dir)
+            if len(df) > 20:
+                self.df = df
+                return df
+            else:
+                slog(f"⚠️ CSV not found, falling back to Yahoo")
+        
         # Check cache first (always use cache if available)
         safe_ticker = self.ticker.replace(".", "_")
         cache_file = f"db/swing_cache_{safe_ticker}.csv"
@@ -615,6 +634,8 @@ def main():
     parser.add_argument('--mode', default='paper', choices=['paper', 'live'], help='Trading mode')
     parser.add_argument('--interval', type=int, default=300, help='Check interval (seconds)')
     parser.add_argument('--iterations', type=int, help='Max iterations')
+    parser.add_argument('--csv', action='store_true', help='Use CSV data instead of Yahoo')
+    parser.add_argument('--csv-dir', default='data', help='CSV directory')
     
     args = parser.parse_args()
     
@@ -626,7 +647,7 @@ def main():
     )
     
     # Single run (not loop)
-    bot.fetch_data()
+    bot.fetch_data(use_csv=args.csv, csv_dir=args.csv_dir)
     signal, confidence, reason = bot.generate_signal()
     
     print(f"\n{'='*40}")

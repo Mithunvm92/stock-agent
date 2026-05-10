@@ -253,10 +253,24 @@ if __name__ == "__main__":
     parser.add_argument('--capital', type=float, default=2000)
     parser.add_argument('--years', type=int, default=1)  # Changed default to 1 year
     parser.add_argument('--period', default=None, help='Custom period: 1mo, 3mo, 6mo, 1y, 2y, 5y')
+    parser.add_argument('--csv', action='store_true', help='Use CSV data instead of Yahoo')
+    parser.add_argument('--csv-dir', default='data', help='CSV directory')
     args = parser.parse_args()
     
-    # Use custom period or calculate from years
-    if args.period:
+    # Use CSV or period or years
+    if args.csv:
+        from csv_loader import load_csv
+        df = load_csv(args.ticker, args.csv_dir)
+        if len(df) < 20:
+            print("❌ No CSV data found. Download from Yahoo first.")
+            exit(1)
+        print(f"✅ Loaded {len(df)} rows from CSV")
+        # Run backtest with CSV data
+        from swing_bot import SwingBot
+        bot = SwingBot(args.ticker, initial_capital=args.capital, mode='paper')
+        bot.df = df
+        # ... copy the backtest logic or call a function
+    elif args.period:
         backtest(args.ticker, args.capital, period=args.period)
     else:
         backtest(args.ticker, args.capital, args.years)

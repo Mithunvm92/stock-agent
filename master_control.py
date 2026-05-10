@@ -72,6 +72,9 @@ while True:
     print("[25] Swing Bot Scan (Multi Stock)")
     print("[26] Start Swing Bot Paper Trading")
     print("[27] Start Swing Bot LIVE Trading")
+    print("[28] CSV - Show Available Data Files")
+    print("[29] CSV - Backtest with CSV Data")
+    print("[30] CSV - Download Instructions")
     print("[0] Exit\n")
 
     choice = input("Select option: ").strip()
@@ -603,6 +606,55 @@ while True:
             print("\n❌ Cancelled")
 
             time.sleep(2)
+
+    # =====================================
+    # CSV OPTIONS (28, 29, 30)
+    # =====================================
+    elif choice == "28":
+
+        print("\n📁 Available CSV Data Files\n")
+
+        from csv_loader import list_available_csv
+
+        files = list_available_csv('data')
+
+        if files:
+            print("Available files in data/:")
+            for f in files:
+                print(f"   • {f}")
+        else:
+            print("No CSV files found in data/")
+            print("Use option 30 to download instructions")
+
+        pause()
+
+    elif choice == "29":
+
+        print("\n📊 CSV Backtest\n")
+
+        ticker = input("Ticker (e.g. SBIN): ").strip().upper()
+        capital_input = input("Capital (default 2000): ").strip()
+        capital = float(capital_input) if capital_input else 2000
+
+        ticker_ns = ticker + ".NS" if not ticker.endswith(".NS") else ticker
+
+        print(f"\nRunning backtest on {ticker}...")
+
+        run(f"python swing_backtest.py --ticker {ticker_ns} --csv --capital {capital}")
+
+        pause()
+
+    elif choice == "30":
+
+        print("\n📥 CSV Download Instructions\n")
+
+        ticker = input("Ticker (e.g. SBIN): ").strip().upper()
+
+        from csv_loader import download_instructions
+
+        print(download_instructions(ticker))
+
+        pause()
 
     # =====================================
     # EXIT
