@@ -68,6 +68,10 @@ while True:
     print("[21] Run Ichimoku Backtest")
     print("[22] Optimize Ichimoku RSI")
     print("[23] Run Ichimoku Paper Trading")
+    print("[24] Run Swing Bot Signal (Single Stock)")
+    print("[25] Swing Bot Scan (Multi Stock)")
+    print("[26] Start Swing Bot Paper Trading")
+    print("[27] Start Swing Bot LIVE Trading")
     print("[0] Exit\n")
 
     choice = input("Select option: ").strip()
@@ -486,6 +490,114 @@ while True:
                 )
 
                 time.sleep(30)
+
+    # =====================================
+    # SWING BOT - SINGLE STOCK SIGNAL
+    # =====================================
+    elif choice == "24":
+
+        ticker = input("\nTicker (e.g. RELIANCE.NS): ").strip().upper()
+
+        if not ticker.endswith(".NS"):
+            ticker = ticker + ".NS"
+
+        run(f"python swing_bot.py --ticker {ticker} --mode paper")
+
+        pause()
+
+    # =====================================
+    # SWING BOT - MULTI STOCK SCAN
+    # =====================================
+    elif choice == "25":
+
+        print("\n📊 Running Swing Bot Multi-Stock Scan...\n")
+
+        from swing_bot import SwingBot
+        import sys
+
+        TICKERS = [
+            "RELIANCE.NS", "TCS.NS", "HDFCBANK.NS", "INFY.NS",
+            "ICICIBANK.NS", "KOTAKBANK.NS", "SBIN.NS", "BHARTIARTL.NS",
+            "HINDUNILVR.NS", "ITC.NS", "LT.NS", "SUNPHARMA.NS"
+        ]
+
+        buy_signals = []
+        sell_signals = []
+
+        for ticker in TICKERS:
+            try:
+                bot = SwingBot(ticker, mode='paper')
+                bot.fetch_data()
+                signal, conf, reason = bot.generate_signal()
+
+                if signal == "BUY":
+                    buy_signals.append(f"{ticker}: {conf:.0f}% - {reason}")
+                elif signal == "SELL":
+                    sell_signals.append(f"{ticker}: {conf:.0f}% - {reason}")
+
+            except Exception as e:
+                print(f"⚠️ {ticker}: {e}")
+
+        print("\n" + "="*50)
+        print("   SWING BOT SCAN RESULTS")
+        print("="*50)
+
+        if buy_signals:
+            print("\n✅ BUY SIGNALS:")
+            for s in buy_signals:
+                print(f"   • {s}")
+
+        if sell_signals:
+            print("\n📉 SELL SIGNALS:")
+            for s in sell_signals:
+                print(f"   • {s}")
+
+        if not buy_signals and not sell_signals:
+            print("\n⏸ No signals - HOLD")
+
+        print("\n" + "="*50)
+
+        pause()
+
+    # =====================================
+    # SWING BOT - PAPER TRADING
+    # =====================================
+    elif choice == "26":
+
+        ticker = input("\nTicker (e.g. RELIANCE.NS): ").strip().upper()
+
+        if not ticker.endswith(".NS"):
+            ticker = ticker + ".NS"
+
+        print("\n📈 Starting Swing Bot Paper Trading...")
+
+        run(f"python swing_bot.py --ticker {ticker} --mode paper --interval 300")
+
+        pause()
+
+    # =====================================
+    # SWING BOT - LIVE TRADING
+    # =====================================
+    elif choice == "27":
+
+        print("\n⚠️ WARNING: LIVE MONEY MODE ⚠️")
+
+        confirm = input("Type YES to continue: ")
+
+        if confirm == "YES":
+
+            ticker = input("\nTicker (e.g. SBIN.NS): ").strip().upper()
+
+            if not ticker.endswith(".NS"):
+                ticker = ticker + ".NS"
+
+            run(f"python swing_bot.py --ticker {ticker} --mode live --interval 300")
+
+        else:
+
+            print("\n❌ Cancelled")
+
+            time.sleep(2)
 
     # =====================================
     # EXIT
